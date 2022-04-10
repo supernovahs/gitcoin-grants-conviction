@@ -6,6 +6,15 @@ import Address from "./Address";
 import { Wordcloud } from "@visx/wordcloud";
 import { scaleLog } from "@visx/scale";
 
+import {
+  AnimatedAxis, // any of these can be non-animated equivalents
+  AnimatedGrid,
+  AnimatedLineSeries,
+  XYChart,
+  Tooltip,
+  AnnotationLineSubject,
+} from "@visx/xychart";
+
 const { ethers } = require("ethers");
 /**
   ~ What it does? ~
@@ -23,8 +32,6 @@ const { ethers } = require("ethers");
     startBlock={1}
   />
 **/
-
-const convictionMultiplier = 0.001;
 
 export default function Events({
   address,
@@ -51,8 +58,6 @@ export default function Events({
 
     for (let e in events) {
       console.log("looking at event", e, events[e]);
-      //if(events[e].args.voter.toLowerCase() == address.toLowerCase()){
-      console.log("FOUND AN EVENT OF MINE!");
       let exists;
       for (let d in deposits) {
         if (deposits[d].voteID.toNumber() === events[e].args.voteID.toNumber()) {
@@ -69,9 +74,8 @@ export default function Events({
           },
         ]);
       }
-      //}
     }
-  }, [events, deposits]);
+  }, [events]);
 
   console.log("deposits", deposits);
 
@@ -79,29 +83,111 @@ export default function Events({
   const [calcedAmount, setCalcedAmount] = useState({});
   const [totalVotes, setTotalVotes] = useState([]);
 
+  const [timeSeries, setTimeSeries] = useState([]);
+
+  const data1 = [
+    { x: "2022-04-09", y: 5 },
+    { x: "2022-04-10", y: 1 },
+    { x: "2022-04-11", y: 2 },
+  ];
+
+  const data2 = [
+    { x: "2022-04-10", y: 8 },
+    { x: "2022-04-11", y: 4 },
+  ];
+
+  const accessors = {
+    xAccessor: d => d.x,
+    yAccessor: d => d.y,
+  };
+
+  const getTimeSeries = async firstVoteTimestamp => {
+    console.log("CALLED!!!!!");
+    var futureDate = new Date(currentTimestamp * 1000 + 1000 * 60 * 60 * 24 * 10);
+    let timeSeriesArray = [];
+    let mapVoteToIndex = [];
+    console.log("futureDate", futureDate.valueOf());
+    console.log("futureDate firstVoteTimestamp", firstVoteTimestamp * 1000);
+
+    for (let i = firstVoteTimestamp; i < futureDate.getTime() / 1000; i += 60 * 60 * 24) {
+      let convictionValues = await contracts.YourContract?.calculateConvictionsAtTime(i + (60 * 60 * 24 - 1)); // Calculate 23:59 from now - future improvement: UTC midnight
+      if (convictionValues === undefined) return;
+      console.log("futureDate convictionValues", convictionValues);
+      for (let j = 0; j < convictionValues.length; j++) {
+        if (convictionValues[j]["vote"] === "") continue;
+        if (mapVoteToIndex[convictionValues[j]["vote"]] === undefined) {
+          mapVoteToIndex[convictionValues[j]["vote"]] = timeSeriesArray.length;
+          timeSeriesArray.push([
+            {
+              x: new Date(i * 1000).toISOString().split("T")[0],
+              y: Number(ethers.utils.formatEther(convictionValues[j]["value"])),
+            },
+          ]);
+        } else {
+          let found = false;
+          for (let k = 0; k < timeSeriesArray[mapVoteToIndex[convictionValues[j]["vote"]]].length; k++) {
+            if (
+              timeSeriesArray[mapVoteToIndex[convictionValues[j]["vote"]]][k].x ===
+              new Date(i * 1000).toISOString().split("T")[0]
+            ) {
+              timeSeriesArray[mapVoteToIndex[convictionValues[j]["vote"]]][k].y += Number(
+                ethers.utils.formatEther(convictionValues[j]["value"]),
+              );
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            timeSeriesArray[mapVoteToIndex[convictionValues[j]["vote"]]].push({
+              x: new Date(i * 1000).toISOString().split("T")[0],
+              y: Number(ethers.utils.formatEther(convictionValues[j]["value"])),
+            });
+          }
+        }
+
+        console.log("futureDate value", convictionValues[j]);
+      }
+    }
+    console.log("futureDate convictionValues timeSeriesArray", timeSeriesArray);
+    setTimeSeries(timeSeriesArray);
+  };
+
   useEffect(async () => {
     console.log("deposits have changed...");
     let statusObj = {};
     let calcedAmountObj = {};
     let totalVotesObj = {};
+    let firstVoteTimestampValue = Number.MAX_SAFE_INTEGER;
+
+    let convictionValues = await contracts.YourContract?.calculateConvictions();
+
+    if (convictionValues === undefined) return;
+
+    console.log("convictionValues", convictionValues);
+
     for (let d in deposits) {
-      let status = await contracts.YourContract.voteStatus(deposits[d].voteID);
+      let status = convictionValues[deposits[d].voteID]["open"];
       console.log("STATUS OF ", deposits[d].voteID, "IS", status);
-      let calced =
-        parseFloat(ethers.utils.formatEther(deposits[d].amount)) +
-        convictionMultiplier *
-          (currentTimestamp - deposits[d].timestamp.toNumber()) *
-          ethers.utils.formatEther(deposits[d].amount);
-      console.log("CALC OF ", deposits[d].voteID, "IS", calced);
       statusObj[deposits[d].voteID] = status;
-      calcedAmountObj[deposits[d].voteID] = calced;
-      if (status) {
-        if (!totalVotesObj[deposits[d].vote]) totalVotesObj[deposits[d].vote] = 0;
-        totalVotesObj[deposits[d].vote] += calced;
-      }
+
+      firstVoteTimestampValue = Math.min(
+        firstVoteTimestampValue,
+        ethers.BigNumber.from(convictionValues[deposits[d].voteID]["timestampOpened"]).toNumber(),
+      );
+
+      let convictionScore = convictionValues[deposits[d].voteID]["value"];
+
+      console.log("CALC OF ", deposits[d].voteID, "IS", ethers.utils.formatEther(convictionScore));
+      calcedAmountObj[deposits[d].voteID] = ethers.utils.formatEther(convictionScore);
+      // if (status) {
+      if (!totalVotesObj[deposits[d].vote]) totalVotesObj[deposits[d].vote] = 0;
+      totalVotesObj[deposits[d].vote] += convictionScore;
+      //}
     }
     setDepositStatus(statusObj);
     setCalcedAmount(calcedAmountObj);
+    getTimeSeries(firstVoteTimestampValue);
+
     let votesArray = [];
     let currMaxValue = 0;
     for (let v in totalVotesObj) {
@@ -111,12 +197,14 @@ export default function Events({
         value: totalVotesObj[v],
       });
     }
-    console.log("ASD");
+
     setMaxValue(currMaxValue);
     setTotalVotes(votesArray);
   }, [deposits, currentTimestamp]);
 
   console.log("totalVotes", totalVotes);
+  console.log("timeSeries >>>", timeSeries);
+  console.log("timeSeries >>>", timeSeries.length);
 
   const fontSize = word => {
     // const size = 20 + 69 * Math.pow(word.value / maxValue, 2) * (1 / (word.value / maxValue));
@@ -136,36 +224,79 @@ export default function Events({
   return (
     <>
       {totalVotes.length > 0 && (
-        <div style={{ width: 800, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
-          <Wordcloud
-            words={totalVotes}
-            width={800}
-            height={800}
-            font={"arial"}
-            fontSize={fontSize}
-            padding={2}
-            spiral={"archimedean"}
-            rotate={rotate}
-            random={() => 0.5}
-          >
-            {cloudWords =>
-              cloudWords.map((w, i) => (
-                <Text
-                  key={w.text}
-                  fill={colors[i % colors.length]}
-                  textAnchor={"middle"}
-                  transform={`translate(${w.x}, ${w.y}) rotate(${w.rotate})`}
-                  fontSize={w.size}
-                  fontFamily={w.font}
-                >
-                  {w.text}
-                </Text>
-              ))
-            }
-          </Wordcloud>
-        </div>
+        <>
+          <div style={{ width: 400, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
+            <Wordcloud
+              words={totalVotes}
+              width={400}
+              height={400}
+              font={"arial"}
+              fontSize={fontSize}
+              padding={2}
+              spiral={"archimedean"}
+              rotate={rotate}
+              random={() => 0.5}
+            >
+              {cloudWords =>
+                cloudWords.map((w, i) => (
+                  <Text
+                    key={w.text}
+                    fill={colors[i % colors.length]}
+                    textAnchor={"middle"}
+                    transform={`translate(${w.x}, ${w.y}) rotate(${w.rotate})`}
+                    fontSize={w.size}
+                    fontFamily={w.font}
+                  >
+                    {w.text}
+                  </Text>
+                ))
+              }
+            </Wordcloud>
+          </div>
+          {timeSeries.length > 0 && (
+            <div style={{ width: 800, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
+              <XYChart height={300} xScale={{ type: "band" }} yScale={{ type: "linear" }}>
+                <AnimatedAxis orientation="bottom" numTicks={6} />
+                <AnimatedAxis orientation="right" />
+                <AnimatedGrid columns={false} numTicks={4} />
+
+                {timeSeries.map((series, i) => {
+                  console.log("series", series);
+                  return <AnimatedLineSeries key={i} dataKey={i} data={series} {...accessors}></AnimatedLineSeries>;
+                })}
+
+                <Tooltip
+                  snapTooltipToDatumX
+                  snapTooltipToDatumY
+                  showVerticalCrosshair
+                  showSeriesGlyphs
+                  renderTooltip={({ tooltipData, colorScale }) => (
+                    <div>
+                      <div style={{ color: colorScale(tooltipData.nearestDatum.key) }}>
+                        {tooltipData.nearestDatum.key}
+                      </div>
+                      {accessors.xAccessor(tooltipData.nearestDatum.datum)}
+                      {", "}
+                      {accessors.yAccessor(tooltipData.nearestDatum.datum)}
+                    </div>
+                  )}
+                />
+              </XYChart>
+            </div>
+          )}
+        </>
       )}
       <div style={{ width: 800, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
+        <Button
+          style={{ marginTop: 8 }}
+          onClick={async () => {
+            /* look how you call setPurpose on your contract: */
+            /* notice how you pass a call back for tx updates too */
+            await localProvider.send("evm_increaseTime", [86400]);
+          }}
+        >
+          Go to tomorrow!
+        </Button>
         <h2>Events:</h2>
         <List
           bordered
