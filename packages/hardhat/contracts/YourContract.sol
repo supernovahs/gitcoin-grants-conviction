@@ -44,21 +44,6 @@ contract YourContract is Ownable {
     convictionFactor = 1; // 0.01%
   }
 
-
-  uint D = 10;
-  uint a = 9;
-  // Sample state
-  uint y0 = 0;
-  function conviction(uint x, uint t) public view returns (uint) {
-      uint Dt = D**t;
-      uint at = a**t;
-      // uint y = (at * y0 + (x*D*(Dt-at))/(D-a)) / Dt; // <-- this is the original formula, it eventually flattens out which is not what we want for this type of signaling
-      // uint y = (at * y0 + (x*D*(Dt-at))) / (at);
-      // Note that all these formulas only work with 
-      uint y = (x * D * (Dt - at)) / at;
-      return y;
-  }
-
   function percentage(uint _amount, uint256 _basisPoints) public pure returns (uint256) {
     require ((_amount / TEN_THOUSAND) * TEN_THOUSAND == _amount, "Amount mst be greater than 10k");
     return (_amount * _basisPoints) / TEN_THOUSAND;

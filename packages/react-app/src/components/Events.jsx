@@ -85,34 +85,19 @@ export default function Events({
 
   const [timeSeries, setTimeSeries] = useState([]);
 
-  const data1 = [
-    { x: "2022-04-09", y: 5 },
-    { x: "2022-04-10", y: 1 },
-    { x: "2022-04-11", y: 2 },
-  ];
-
-  const data2 = [
-    { x: "2022-04-10", y: 8 },
-    { x: "2022-04-11", y: 4 },
-  ];
-
   const accessors = {
     xAccessor: d => d.x,
     yAccessor: d => d.y,
   };
 
   const getTimeSeries = async firstVoteTimestamp => {
-    console.log("CALLED!!!!!");
     var futureDate = new Date(currentTimestamp * 1000 + 1000 * 60 * 60 * 24 * 10);
     let timeSeriesArray = [];
     let mapVoteToIndex = [];
-    console.log("futureDate", futureDate.valueOf());
-    console.log("futureDate firstVoteTimestamp", firstVoteTimestamp * 1000);
 
     for (let i = firstVoteTimestamp; i < futureDate.getTime() / 1000; i += 60 * 60 * 24) {
       let convictionValues = await contracts.YourContract?.calculateConvictionsAtTime(i + (60 * 60 * 24 - 1)); // Calculate 23:59 from now - future improvement: UTC midnight
       if (convictionValues === undefined) return;
-      console.log("futureDate convictionValues", convictionValues);
       for (let j = 0; j < convictionValues.length; j++) {
         if (convictionValues[j]["vote"] === "") continue;
         if (mapVoteToIndex[convictionValues[j]["vote"]] === undefined) {
@@ -179,10 +164,8 @@ export default function Events({
 
       console.log("CALC OF ", deposits[d].voteID, "IS", ethers.utils.formatEther(convictionScore));
       calcedAmountObj[deposits[d].voteID] = ethers.utils.formatEther(convictionScore);
-      // if (status) {
       if (!totalVotesObj[deposits[d].vote]) totalVotesObj[deposits[d].vote] = 0;
       totalVotesObj[deposits[d].vote] += convictionScore;
-      //}
     }
     setDepositStatus(statusObj);
     setCalcedAmount(calcedAmountObj);
