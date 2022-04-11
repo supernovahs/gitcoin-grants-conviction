@@ -1,6 +1,6 @@
 # 🏗 Scaffold-ETH - 🗳 Conviction Cloud
 
-This is the first iteration of a simple conviction voting system.
+This is the second iteration of a simple conviction voting system.
 
 The way conviction voting work is conceptually simple:
 
@@ -11,6 +11,14 @@ In this example, a live convition cloud forms with the real-time votes.
 
 Users can withdraw their tokens at any time. 
 
+The first iteration displayed a word-cloud with all the votes on it.
+This second iteration moves the conviction scora calculation on-chain and adds a chart showing the
+forecasted conviction scores 10 days in the future:
+
+![Conviction Chart](https://user-images.githubusercontent.com/98137565/162845415-6936c3b7-ee37-4c9b-83fb-70030930b1ce.png)
+
+You can click "Go to tomorrow!" to move the clock of your *local* hardhat chain 24h in the future - this will allow you to simulate people
+voring and removing their votes over time.
 
 # 🏄‍♂️ Quick Start
 
@@ -64,9 +72,17 @@ You will now see your vote appear in a cloud...but it will not look like a cloud
 
 You can also switch account in Metamask (as long as the account has received some tokens when you deployed) and see the cloud change in real time when you cast votes from a separate window.
 
+You can click "Go to tomorrow!" to move the clock of your *local* hardhat chain 24h in the future - this will allow you to simulate people
+voring and removing their votes over time. Remember to restart your local chain between deployments to go back to today.
+
 Eventually you will see something like this:
 
 ![Conviction Cloud](https://user-images.githubusercontent.com/98137565/162336968-1731f84c-df63-443c-aa5a-643e4221ec6b.png)
+
+And the chart might look something like this:
+
+![Conviction Chart](https://user-images.githubusercontent.com/98137565/162845415-6936c3b7-ee37-4c9b-83fb-70030930b1ce.png)
+
 
 # 📚 Documentation
 
