@@ -12,13 +12,14 @@ In this example, a live convition cloud forms with the real-time votes.
 Users can withdraw their tokens at any time. 
 
 The first iteration displayed a word-cloud with all the votes on it.
-This second iteration moves the conviction scora calculation on-chain and adds a chart showing the
-forecasted conviction scores 10 days in the future:
+This second iteration moves the conviction scora calculation on-chain, adds an exponential decay function used when users withdraw their votes[1], and adds a chart showing the forecasted conviction scores 10 days in the future:
 
 ![Conviction Chart](https://user-images.githubusercontent.com/98137565/162845415-6936c3b7-ee37-4c9b-83fb-70030930b1ce.png)
 
 You can click "Go to tomorrow!" to move the clock of your *local* hardhat chain 24h in the future - this will allow you to simulate people
 voring and removing their votes over time.
+
+[1] Well, sort of: exponential decay is hard in Solidity, so for now I used a simple half-life calculation to approximate the exponential decay.
 
 # 🏄‍♂️ Quick Start
 
