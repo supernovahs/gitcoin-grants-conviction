@@ -44,6 +44,15 @@ contract YourContract is Ownable {
     convictionFactor = 1; // 0.01%
   }
 
+  function sqrt(uint x) public pure returns (uint256 y) {
+    uint z = (x + 1) / 2;
+    y = x;
+    while (z < y) {
+        y = z;
+        z = (x / z + z) / 2;
+    }
+  }
+
   function percentage(uint _amount, uint256 _basisPoints) public pure returns (uint256) {
     require ((_amount / TEN_THOUSAND) * TEN_THOUSAND == _amount, "Amount mst be greater than 10k");
     return (_amount * _basisPoints) / TEN_THOUSAND;
@@ -83,6 +92,7 @@ contract YourContract is Ownable {
   
   function calculateConvictionsAtTime(uint256 timeAt) public view returns (ConvictionRecord[] memory) {
       ConvictionRecord[] memory ret = new ConvictionRecord[](votes.length);
+      
       uint256 returned = 0;
       for (uint256 i = 0; i < votes.length; i++) {
         if (votes[i].timestampOpened > timeAt) {
