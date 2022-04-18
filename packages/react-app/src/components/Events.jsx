@@ -96,7 +96,7 @@ export default function Events({
     let mapVoteToIndex = [];
 
     for (let i = firstVoteTimestamp; i < futureDate.getTime() / 1000; i += 60 * 60 * 24) {
-      let convictionValues = await contracts.YourContract?.calculateConvictionsAtTime(i + (60 * 60 * 24 - 1)); // Calculate 23:59 from now - future improvement: UTC midnight
+      let convictionValues = await contracts.YourContract?.calculateConvictionsByProposalAtTime(i + (60 * 60 * 24 - 1)); // Calculate 23:59 from now - future improvement: UTC midnight
       if (convictionValues === undefined) return;
       for (let j = 0; j < convictionValues.length; j++) {
         if (convictionValues[j]["vote"] === "") continue;
@@ -144,7 +144,7 @@ export default function Events({
     let totalVotesObj = {};
     let firstVoteTimestampValue = Number.MAX_SAFE_INTEGER;
 
-    let convictionValues = await contracts.YourContract?.calculateConvictions();
+    let convictionValues = await contracts.YourContract?.calculateConvictionsByVoteId();
 
     if (convictionValues === undefined) return;
 

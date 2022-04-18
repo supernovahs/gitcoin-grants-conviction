@@ -25,7 +25,7 @@ contract YourContract is Ownable {
     bool open;
   }
 
-  struct ConvictionRecord {
+  struct ConvictionByVoteIdRecord {
     uint256 voteID;
     string vote;
     address voter;
@@ -35,7 +35,14 @@ contract YourContract is Ownable {
     uint256 timestampClosed;
   }
 
+  struct ConvictionByProposalRecord {
+    string vote;
+    uint256 value;
+  }
+
   Vote[] public votes;
+  string[] public proposals;
+  mapping (string => uint256[]) public votesByProposal;
 
   constructor(address tokenAddress) payable {
     // what should we do on deploy?
@@ -86,35 +93,55 @@ contract YourContract is Ownable {
 
   function calculateConvictionAtTime(uint256 _valueAtOpen, uint256 _timestampOpened, uint256 _timestampAt) public view returns (uint256) {
     uint256 deltaT = _timestampAt - _timestampOpened;
-    return _valueAtOpen + (( (percentage(_valueAtOpen, convictionFactor) >> 16)  * deltaT**2) >> 2);
+    return _valueAtOpen + ( (percentage(_valueAtOpen, convictionFactor) >> 16)  * deltaT**2);
   }
 
   
-  function calculateConvictionsAtTime(uint256 timeAt) public view returns (ConvictionRecord[] memory) {
-      ConvictionRecord[] memory ret = new ConvictionRecord[](votes.length);
-      
-      uint256 returned = 0;
-      for (uint256 i = 0; i < votes.length; i++) {
-        if (votes[i].timestampOpened > timeAt) {
-          continue;
-        }
-        
-        if (votes[i].open || votes[i].timestampClosed > timeAt) {
-            uint256 convictionCalculated = calculateConvictionAtTime(votes[i].amount, votes[i].timestampOpened, timeAt);
-            ret[returned] = ConvictionRecord(i, votes[i].vote, votes[i].voter, convictionCalculated, true, votes[i].timestampOpened, votes[i].timestampOpened);
-        } else {
-            uint256 convictionCalculated = calculateConvictionAtTime(votes[i].amount, votes[i].timestampOpened, votes[i].timestampClosed);
-            ret[returned] = ConvictionRecord(i, votes[i].vote, votes[i].voter, calculateDecayAtTime(convictionCalculated, votes[i].timestampClosed, timeAt), false, votes[i].timestampOpened, votes[i].timestampClosed);
-        }
-        returned++;
+  function calculateConvictionByVoteAtTime(uint256 timeAt, uint256 voteId) public view returns (ConvictionByVoteIdRecord memory) {
+      ConvictionByVoteIdRecord memory ret;
+    
+      if (votes[voteId].timestampOpened > timeAt) {
+        return ret;
       }
+      
+      if (votes[voteId].open || votes[voteId].timestampClosed > timeAt) {
+          uint256 convictionCalculated = calculateConvictionAtTime(votes[voteId].amount, votes[voteId].timestampOpened, timeAt);
+          ret = ConvictionByVoteIdRecord(voteId, votes[voteId].vote, votes[voteId].voter, convictionCalculated, true, votes[voteId].timestampOpened, votes[voteId].timestampOpened);
+      } else {
+          uint256 convictionCalculated = calculateConvictionAtTime(votes[voteId].amount, votes[voteId].timestampOpened, votes[voteId].timestampClosed);
+          ret = ConvictionByVoteIdRecord(voteId, votes[voteId].vote, votes[voteId].voter, calculateDecayAtTime(convictionCalculated, votes[voteId].timestampClosed, timeAt), false, votes[voteId].timestampOpened, votes[voteId].timestampClosed);
+      }
+      ret.value = sqrt(ret.value);
       return ret;
   }
 
-  function calculateConvictions() public view returns (ConvictionRecord[] memory) {
-    return calculateConvictionsAtTime(currentTimestamp());
+  function calculateConvictionsByVoteId() public view returns (ConvictionByVoteIdRecord[] memory) {
+    ConvictionByVoteIdRecord[] memory ret = new ConvictionByVoteIdRecord[](votes.length);
+    for (uint256 i = 0; i < votes.length; i++) {
+      ret[i] = calculateConvictionByVoteAtTime(currentTimestamp(), i);
+    }
+    return ret;
   }
 
+function calculateConvictionsByProposalAtTime(uint256 timeAt) public view returns (ConvictionByProposalRecord[] memory) {
+    
+    ConvictionByProposalRecord[] memory ret = new ConvictionByProposalRecord[](proposals.length);
+
+    for (uint256 i = 0; i < proposals.length; i++) {
+
+      uint256[] memory voteIds = votesByProposal[proposals[i]];
+      uint256 convictionSum = 0;
+      for (uint256 j = 0; j < voteIds.length; j++) {
+        convictionSum += calculateConvictionByVoteAtTime(timeAt, voteIds[j]).value;
+      }
+      ret[i] = ConvictionByProposalRecord(proposals[i], convictionSum ** 2);
+    }
+    return ret;
+  }
+
+  function calculateConvictionsByProposal() public view returns (ConvictionByProposalRecord[] memory) {
+    return calculateConvictionsByProposalAtTime(currentTimestamp());
+  }
 
   function vote(string memory voteString, uint256 amount) public {
     yourToken.transferFrom(msg.sender, address(this), amount);
@@ -128,6 +155,9 @@ contract YourContract is Ownable {
       timestampClosed: block.timestamp, // will be updated when closed
       open: true
     }));
+
+    votesByProposal[voteString].push(voteID);
+    proposals.push(voteString);
 
     console.log(msg.sender,voteString);
     emit MakeVote(voteID, msg.sender, amount, voteString, block.timestamp);
