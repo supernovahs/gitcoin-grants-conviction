@@ -83,7 +83,7 @@ export default function Events({
   const [calcedAmount, setCalcedAmount] = useState({});
   const [totalVotes, setTotalVotes] = useState([]);
 
-  const [timeSeries, setTimeSeries] = useState([]);
+  const [timeSeries, setTimeSeries] = useState({});
 
   const accessors = {
     xAccessor: d => d.x,
@@ -134,7 +134,12 @@ export default function Events({
       }
     }
     console.log("futureDate convictionValues timeSeriesArray", timeSeriesArray);
-    setTimeSeries(timeSeriesArray);
+    let mapIndexToVote = [];
+    for (var key in mapVoteToIndex) {
+      mapIndexToVote[mapVoteToIndex[key]] = key;
+    }
+    console.log("futureDate convictionValues mapIndexToVote", mapIndexToVote);
+    setTimeSeries({ datapoints: timeSeriesArray, mapIndexToVote });
   };
 
   useEffect(async () => {
@@ -185,9 +190,9 @@ export default function Events({
     setTotalVotes(votesArray);
   }, [deposits, currentTimestamp]);
 
-  console.log("totalVotes", totalVotes);
-  console.log("timeSeries >>>", timeSeries);
-  console.log("timeSeries >>>", timeSeries.length);
+  // console.log("totalVotes", totalVotes);
+  // console.log("timeSeries >>>", timeSeries);
+  // console.log("timeSeries >>>", timeSeries.length);
 
   const fontSize = word => {
     // const size = 20 + 69 * Math.pow(word.value / maxValue, 2) * (1 / (word.value / maxValue));
@@ -236,16 +241,23 @@ export default function Events({
               }
             </Wordcloud>
           </div>
-          {timeSeries.length > 0 && (
+          {timeSeries.datapoints?.length > 0 && (
             <div style={{ width: 800, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
               <XYChart height={300} xScale={{ type: "band" }} yScale={{ type: "linear" }}>
                 <AnimatedAxis orientation="bottom" numTicks={6} />
                 <AnimatedAxis orientation="right" />
                 <AnimatedGrid columns={false} numTicks={4} />
 
-                {timeSeries.map((series, i) => {
-                  console.log("series", series);
-                  return <AnimatedLineSeries key={i} dataKey={i} data={series} {...accessors}></AnimatedLineSeries>;
+                {timeSeries.mapIndexToVote.map((indexToVote, i) => {
+                  console.log("series", indexToVote);
+                  return (
+                    <AnimatedLineSeries
+                      key={i}
+                      dataKey={indexToVote}
+                      data={timeSeries.datapoints[i]}
+                      {...accessors}
+                    ></AnimatedLineSeries>
+                  );
                 })}
 
                 <Tooltip
