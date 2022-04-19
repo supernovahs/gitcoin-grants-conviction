@@ -91,7 +91,7 @@ export default function Events({
   };
 
   const getTimeSeries = async firstVoteTimestamp => {
-    var futureDate = new Date(currentTimestamp * 1000 + 1000 * 60 * 60 * 24 * 10);
+    var futureDate = new Date(currentTimestamp * 1000 + 1000 * 60 * 60 * 24 * 5);
     let timeSeriesArray = [];
     let mapVoteToIndex = [];
 
