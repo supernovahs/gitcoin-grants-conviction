@@ -39,7 +39,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
   await tx2.wait();
 
-  await deploy("YourContract", {
+  await deploy("GTCStaking", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
     args: [GTC.address],
