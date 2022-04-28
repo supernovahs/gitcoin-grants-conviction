@@ -67,3 +67,6 @@ yarn-error.log*
 
 # doc directory
 /doc
+
+# foundry test out folder
+out

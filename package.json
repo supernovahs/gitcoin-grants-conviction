@@ -53,7 +53,9 @@
     "theme": "yarn workspace @scaffold-eth/react-app theme",
     "watch-theme": "yarn workspace @scaffold-eth/react-app watch",
     "postinstall": "husky install",
-    "fetch-grants": "yarn workspace @scaffold-eth/react-app fetch-grants"
+    "fetch-grants": "yarn workspace @scaffold-eth/react-app fetch-grants",
+    "forge-test": "forge test",
+    "forge-test-v": "forge test -vvvvv"
   },
   "workspaces": {
     "packages": [
