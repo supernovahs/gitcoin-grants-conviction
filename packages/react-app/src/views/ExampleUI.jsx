@@ -7,6 +7,8 @@ import axios from "axios";
 import { ethers } from "ethers";
 import InfiniteScroll from "react-infinite-scroller";
 
+import { useDebounce } from "use-debounce";
+
 const { Meta } = Card;
 
 export default function ExampleUI({
@@ -27,8 +29,13 @@ export default function ExampleUI({
   const [items, setItems] = useState([]);
   const [nextStart, setNextStart] = useState(0);
   const [fetching, setFetching] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [debouncedFilter] = useDebounce(filter, 500);
+  const [totalGrants, setTotalGrants] = useState(0);
 
   const limit = 50;
+
+  let reset = false;
 
   const axiosConfig = {
     baseURL: "http://localhost:3001/grants",
@@ -38,30 +45,53 @@ export default function ExampleUI({
   const axiosClient = axios.create(axiosConfig);
 
   const fetchGrants = useCallback(async () => {
-    if (fetching) {
+    if (fetching || (nextStart === -1 && !reset)) {
       return;
+    }
+    let start = nextStart;
+    if (reset) {
+      start = 0;
+      setNextStart(0);
+      reset = false;
     }
     setFetching(true);
 
+    let queryString = `?_start=${start}&_limit=${limit}`;
+    if (filter) {
+      queryString += `&q=${filter}`;
+      console.log("grants query", queryString);
+    }
+
     try {
-      let res = await axiosClient.get(`?_start=${nextStart}&_limit=${limit}`);
+      let res = await axiosClient.get(queryString);
       let data = res.data;
 
-      setItems([...items, ...data]);
+      if (start === 0) {
+        setItems(data);
+      } else {
+        setItems([...items, ...data]);
+      }
 
-      if (res.headers["x-total-count"] > nextStart + limit) {
-        setNextStart(nextStart + limit);
+      setTotalGrants(res.headers["x-total-count"]);
+      if (res.headers["x-total-count"] > start + limit) {
+        setNextStart(start + limit);
       } else {
         setNextStart(-1);
       }
     } finally {
       setFetching(false);
     }
-  }, [items, fetching, nextStart]);
+  }, [items, fetching, nextStart, debouncedFilter]);
 
   useEffect(() => {
     fetchGrants();
   }, []);
+
+  useEffect(() => {
+    if (filter.length < 4 && filter.length > 0) return;
+    reset = true;
+    fetchGrants();
+  }, [debouncedFilter]);
 
   useEffect(() => {
     if (tokenBalance) console.log("Your new token balance is", ethers.utils.formatEther(tokenBalance?.toString()));
@@ -98,7 +128,7 @@ export default function ExampleUI({
           marginBottom: 64,
         }}
       >
-        <h2>Example UI:</h2>
+        <h2>Gitcoin Conviction Staking</h2>
         <Divider />
         <div style={{ margin: 8 }}>
           <div>Your Balance: {tokenBalance ? ethers.utils.formatEther(tokenBalance) : "..."}</div>
@@ -169,12 +199,17 @@ export default function ExampleUI({
           >
             Vote
           </Button>
+          <div>Filter:</div>
+          <Input
+            onChange={e => {
+              setFilter(e.target.value);
+            }}
+          />
+          <span>Total grants found: {totalGrants}</span>
         </div>
       </div>
 
       <InfiniteScroll
-        className=""
-        // pageStart={0}
         loadMore={() => {
           !fetching && fetchGrants();
         }}
