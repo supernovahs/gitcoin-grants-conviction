@@ -1,11 +1,13 @@
-import { Button, Card, DatePicker, Divider, Input, Progress, Slider, Spin, Switch } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Card, DatePicker, Divider, Input, Progress, Slider, Spin, Switch, Row, Col } from "antd";
+import React, { useEffect, useState, useCallback } from "react";
 import { utils } from "ethers";
-import { SyncOutlined } from "@ant-design/icons";
-
+import { ShoppingCartOutlined, SyncOutlined } from "@ant-design/icons";
 import { Address, Balance, Events } from "../components";
+import axios from "axios";
+import { ethers } from "ethers";
+import InfiniteScroll from "react-infinite-scroller";
 
-const { ethers } = require("ethers");
+const { Meta } = Card;
 
 export default function ExampleUI({
   purpose,
@@ -22,10 +24,50 @@ export default function ExampleUI({
 }) {
   const [amount, setAmount] = useState();
   const [vote, setVote] = useState();
+  const [items, setItems] = useState([]);
+  const [nextStart, setNextStart] = useState(0);
+  const [fetching, setFetching] = useState(false);
+
+  const limit = 50;
+
+  const axiosConfig = {
+    baseURL: "http://localhost:3001/grants",
+    timeout: 30000,
+  };
+
+  const axiosClient = axios.create(axiosConfig);
+
+  const fetchGrants = useCallback(async () => {
+    if (fetching) {
+      return;
+    }
+    setFetching(true);
+
+    try {
+      let res = await axiosClient.get(`?_start=${nextStart}&_limit=${limit}`);
+      let data = res.data;
+
+      setItems([...items, ...data]);
+
+      if (res.headers["x-total-count"] > nextStart + limit) {
+        setNextStart(nextStart + limit);
+      } else {
+        setNextStart(-1);
+      }
+    } finally {
+      setFetching(false);
+    }
+  }, [items, fetching, nextStart]);
+
+  useEffect(() => {
+    fetchGrants();
+  }, []);
 
   useEffect(() => {
     if (tokenBalance) console.log("Your new token balance is", ethers.utils.formatEther(tokenBalance?.toString()));
   }, [tokenBalance]);
+
+  const hasMoreItems = nextStart !== -1;
 
   return (
     <div>
@@ -46,7 +88,16 @@ export default function ExampleUI({
         writeContracts={writeContracts}
       />
 
-      <div style={{ border: "1px solid #cccccc", padding: 16, width: 400, margin: "auto", marginTop: 64 }}>
+      <div
+        style={{
+          border: "1px solid #cccccc",
+          padding: 16,
+          width: 400,
+          margin: "auto",
+          marginTop: 64,
+          marginBottom: 64,
+        }}
+      >
         <h2>Example UI:</h2>
         <Divider />
         <div style={{ margin: 8 }}>
@@ -119,154 +170,38 @@ export default function ExampleUI({
             Vote
           </Button>
         </div>
-        <Divider />
-        Your Address:
-        <Address address={address} ensProvider={mainnetProvider} fontSize={16} />
-        <Divider />
-        ENS Address Example:
-        <Address
-          address="0x34aA3F359A9D614239015126635CE7732c18fDF3" /* this will show as austingriffith.eth */
-          ensProvider={mainnetProvider}
-          fontSize={16}
-        />
-        <Divider />
-        {/* use utils.formatEther to display a BigNumber: */}
-        <h2>Your Balance: {yourLocalBalance ? utils.formatEther(yourLocalBalance) : "..."}</h2>
-        <div>OR</div>
-        <Balance address={address} provider={localProvider} price={price} />
-        <Divider />
-        <div>🐳 Example Whale Balance:</div>
-        <Balance balance={utils.parseEther("1000")} provider={localProvider} price={price} />
-        <Divider />
-        {/* use utils.formatEther to display a BigNumber: */}
-        <h2>Your Balance: {yourLocalBalance ? utils.formatEther(yourLocalBalance) : "..."}</h2>
-        <Divider />
-        Your Contract Address:
-        <Address
-          address={readContracts && readContracts.YourContract ? readContracts.YourContract.address : null}
-          ensProvider={mainnetProvider}
-          fontSize={16}
-        />
-        <Divider />
-        <div style={{ margin: 8 }}>
-          <Button
-            onClick={() => {
-              /* look how you call setPurpose on your contract: */
-              tx(writeContracts.YourContract.setPurpose("🍻 Cheers"));
-            }}
-          >
-            Set Purpose to &quot;🍻 Cheers&quot;
-          </Button>
-        </div>
-        <div style={{ margin: 8 }}>
-          <Button
-            onClick={() => {
-              /*
-              you can also just craft a transaction and send it to the tx() transactor
-              here we are sending value straight to the contract's address:
-            */
-              tx({
-                to: writeContracts.YourContract.address,
-                value: utils.parseEther("0.001"),
-              });
-              /* this should throw an error about "no fallback nor receive function" until you add it */
-            }}
-          >
-            Send Value
-          </Button>
-        </div>
-        <div style={{ margin: 8 }}>
-          <Button
-            onClick={() => {
-              /* look how we call setPurpose AND send some value along */
-              tx(
-                writeContracts.YourContract.setPurpose("💵 Paying for this one!", {
-                  value: utils.parseEther("0.001"),
-                }),
-              );
-              /* this will fail until you make the setPurpose function payable */
-            }}
-          >
-            Set Purpose With Value
-          </Button>
-        </div>
-        <div style={{ margin: 8 }}>
-          <Button
-            onClick={() => {
-              /* you can also just craft a transaction and send it to the tx() transactor */
-              tx({
-                to: writeContracts.YourContract.address,
-                value: utils.parseEther("0.001"),
-                data: writeContracts.YourContract.interface.encodeFunctionData("setPurpose(string)", [
-                  "🤓 Whoa so 1337!",
-                ]),
-              });
-              /* this should throw an error about "no fallback nor receive function" until you add it */
-            }}
-          >
-            Another Example
-          </Button>
-        </div>
       </div>
 
-      {/*
-        📑 Maybe display a list of events?
-          (uncomment the event and emit line in YourContract.sol! )
-      */}
-
-      <div style={{ width: 600, margin: "auto", marginTop: 32, paddingBottom: 256 }}>
-        <Card>
-          Check out all the{" "}
-          <a
-            href="https://github.com/austintgriffith/scaffold-eth/tree/master/packages/react-app/src/components"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            📦 components
-          </a>
-        </Card>
-
-        <Card style={{ marginTop: 32 }}>
-          <div>
-            There are tons of generic components included from{" "}
-            <a href="https://ant.design/components/overview/" target="_blank" rel="noopener noreferrer">
-              🐜 ant.design
-            </a>{" "}
-            too!
+      <InfiniteScroll
+        className=""
+        // pageStart={0}
+        loadMore={() => {
+          !fetching && fetchGrants();
+        }}
+        hasMore={hasMoreItems}
+        loader={
+          <div className="loader" key={0}>
+            Loading ...
           </div>
-
-          <div style={{ marginTop: 8 }}>
-            <Button type="primary">Buttons</Button>
-          </div>
-
-          <div style={{ marginTop: 8 }}>
-            <SyncOutlined spin /> Icons
-          </div>
-
-          <div style={{ marginTop: 8 }}>
-            Date Pickers?
-            <div style={{ marginTop: 2 }}>
-              <DatePicker onChange={() => {}} />
-            </div>
-          </div>
-
-          <div style={{ marginTop: 32 }}>
-            <Slider range defaultValue={[20, 50]} onChange={() => {}} />
-          </div>
-
-          <div style={{ marginTop: 32 }}>
-            <Switch defaultChecked onChange={() => {}} />
-          </div>
-
-          <div style={{ marginTop: 32 }}>
-            <Progress percent={50} status="active" />
-          </div>
-
-          <div style={{ marginTop: 32 }}>
-            <Spin />
-          </div>
-        </Card>
-      </div>
+        }
+      >
+        <Row gutter={[24, 16]}>
+          {items.map(grant => {
+            return (
+              <Col span={6}>
+                <Card
+                  hoverable
+                  style={{ width: 240 }}
+                  cover={<img alt="example" src={grant.img} />}
+                  actions={[<ShoppingCartOutlined key="add-to-cart" />]}
+                >
+                  <Meta title={grant.title} description={grant.description.substr(0, 100) + "..."} />
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      </InfiniteScroll>
     </div>
   );
 }
