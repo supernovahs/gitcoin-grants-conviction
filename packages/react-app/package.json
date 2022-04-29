@@ -99,6 +99,6 @@
     "theme": "npx gulp less",
     "watch": "node ./scripts/watch.js",
     "prettier": "npx prettier --write . '!(node_module|build)/**/*'",
-    "fetch-grants": "curl -X GET \"https://gitcoin.co/api/v0.1/grants/?format=json\" -o grants.json"
+    "fetch-grants": "curl -X GET \"https://gitcoin.co/api/v0.1/grants/?format=json\" -o public/grants.json"
   }
 }
