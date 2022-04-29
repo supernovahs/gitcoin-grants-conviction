@@ -15,6 +15,7 @@ import "./App.css";
 import {
   Account,
   Contract,
+  Events,
   Faucet,
   GasGauge,
   Header,
@@ -166,8 +167,10 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
+  const tokenBalance = useContractReader(readContracts, "GTC", "balanceOf", [address]);
+
   // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  const currentTimestamp = useContractReader(readContracts, "GTCStaking", "currentTimestamp");
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -288,9 +291,30 @@ function App(props) {
                 this <Contract/> component will automatically parse your ABI
                 and give you a form to interact with it locally
             */}
-
+          <Events
+            address={address}
+            contracts={readContracts}
+            contractName="GTCStaking"
+            eventName="VoteCasted"
+            localProvider={localProvider}
+            mainnetProvider={mainnetProvider}
+            startBlock={1}
+            currentTimestamp={currentTimestamp}
+            tx={tx}
+            readContracts={readContracts}
+            writeContracts={writeContracts}
+          />
           <Contract
-            name="YourContract"
+            name="GTCStaking"
+            price={price}
+            signer={userSigner}
+            provider={localProvider}
+            address={address}
+            blockExplorer={blockExplorer}
+            contractConfig={contractConfig}
+          />
+          <Contract
+            name="GTC"
             price={price}
             signer={userSigner}
             provider={localProvider}
@@ -314,11 +338,12 @@ function App(props) {
             mainnetProvider={mainnetProvider}
             localProvider={localProvider}
             yourLocalBalance={yourLocalBalance}
+            tokenBalance={tokenBalance}
             price={price}
             tx={tx}
             writeContracts={writeContracts}
             readContracts={readContracts}
-            purpose={purpose}
+            currentTimestamp={currentTimestamp}
           />
         </Route>
         <Route path="/mainnetdai">
