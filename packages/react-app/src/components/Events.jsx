@@ -74,6 +74,7 @@ export default function Events({
   const [totalVotes, setTotalVotes] = useState([]);
 
   useEffect(async () => {
+    return false;
     console.log("deposits have changed...");
     let statusObj = {};
     let calcedAmountObj = {};
@@ -142,7 +143,7 @@ export default function Events({
                   onClick={async () => {
                     /* look how you call setPurpose on your contract: */
                     /* notice how you pass a call back for tx updates too */
-                    const result = tx(writeContracts.YourContract.withdraw(item.args.voteID.toNumber()), update => {
+                    /*const result = tx(writeContracts.YourContract.withdraw(item.args.voteID.toNumber()), update => {
                       console.log("📡 Transaction Update:", update);
                       if (update && (update.status === "confirmed" || update.status === 1)) {
                         console.log(" 🍾 Transaction " + update.hash + " finished!");
@@ -158,7 +159,7 @@ export default function Events({
                       }
                     });
                     console.log("awaiting metamask/web3 confirm result...", result);
-                    console.log(await result);
+                    console.log(await result);*/
                   }}
                 >
                   Close
