@@ -2,8 +2,8 @@
 
 # Rinkeby
 
-GTC: https://rinkeby.etherscan.io/address/0xc6D41F9A940EDE93Dc0c6B8B8D2A77D26da4c27d#code
-GTCStaking: https://rinkeby.etherscan.io/address/0x9a5ce4ECC50E15f876A2Eae475bF98Ca7C6aDB74#code
+GTC: https://rinkeby.etherscan.io/address/0x4e6806eE17741a7CE59C6E43488e29BDF3D68167#code
+GTCStaking: https://rinkeby.etherscan.io/address/0x0D0E913c0289a958Eab6358d142fB9be2694C7F5#code
 
 > everything you need to build on Ethereum! 🚀
 

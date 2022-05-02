@@ -33,12 +33,12 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
   await tx1.wait();
 
-  /*const tx2 = await GTC.transfer(
+  const tx2 = await GTC.transfer(
     "0x3045313ad5d09035C69dA75E59a163c754D1b442", // second address
     ethers.utils.parseEther("10")
   );
   await tx2.wait();
-*/
+
   await deploy("GTCStaking", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,

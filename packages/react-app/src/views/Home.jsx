@@ -96,7 +96,7 @@ export default function Home({ tokenBalance, cart, setCart }) {
           padding: 16,
           width: 400,
           margin: "auto",
-          marginTop: 32,
+          marginTop: 64,
           marginBottom: 32,
         }}
       >

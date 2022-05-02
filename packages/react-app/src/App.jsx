@@ -31,9 +31,9 @@ import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Home, Confirm, Checkout, Success } from "./views";
+import { Home, Confirm, Checkout, Success, Dashboard } from "./views";
 import { useStaticJsonRPC, useLocalStorage } from "./hooks";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, DashboardOutlined } from "@ant-design/icons";
 
 require("dotenv").config();
 
@@ -58,7 +58,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.rinkeby; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -177,8 +177,9 @@ function App(props) {
 
   const tokenBalance = useContractReader(readContracts, "GTC", "balanceOf", [address]);
 
-  // keep track of a variable from the contract in the local React state:
   const currentTimestamp = useContractReader(readContracts, "GTCStaking", "currentTimestamp");
+
+  const votes = useContractReader(readContracts, "GTCStaking", "getVotesForAddress", [address]);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -325,6 +326,9 @@ function App(props) {
         <Route exact path="/success">
           <Success />
         </Route>
+        <Route exact path="/dashboard">
+          <Dashboard votes={votes} tx={tx} writeContracts={writeContracts} readContracts={readContracts} />
+        </Route>
       </Switch>
 
       <ThemeSwitch />
@@ -354,6 +358,19 @@ function App(props) {
             blockExplorer={blockExplorer}
             fontSize={16}
           />
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            key="dash"
+            shape="round"
+            size="large"
+            icon={<DashboardOutlined key="dashboard" />}
+            onClick={() => {
+              history.push("/dashboard");
+            }}
+          >
+            Dashboard
+          </Button>
           <Button
             style={{ marginLeft: 20 }}
             type="primary"

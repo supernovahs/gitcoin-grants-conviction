@@ -37,6 +37,8 @@ contract GTCStaking {
 
   Vote[] public votes;
 
+  mapping (address => uint256[]) public voterToVoteIds;
+
   constructor(address tokenAddress) payable {
     gtcToken = GTC(tokenAddress);
   }
@@ -68,6 +70,8 @@ contract GTCStaking {
       lockedUntil: _lockedUntil
     }));
 
+    voterToVoteIds[msg.sender].push(voteId);
+
     emit VoteCasted(voteId, msg.sender, _amount, _grantId, block.timestamp, _lockedUntil);
   }
 
@@ -75,6 +79,15 @@ contract GTCStaking {
     for (uint256 i = 0; i < _batch.length; i++) {
       vote(_batch[i].grantId, _batch[i].amount, _batch[i].lockedUntil);
     }
+  }
+
+  function getVotesForAddress(address _voter) external view returns (Vote[] memory) {
+    uint256[] memory voteIds = voterToVoteIds[_voter];
+    Vote[] memory votesForAddress = new Vote[](voteIds.length);
+    for (uint256 i = 0; i < voteIds.length; i++) {
+      votesForAddress[i] = votes[voteIds[i]];
+    }
+    return votesForAddress;
   }
 
   function releaseTokens(uint256 _voteId) public {

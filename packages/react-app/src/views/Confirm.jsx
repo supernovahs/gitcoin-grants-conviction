@@ -70,7 +70,7 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
         padding: 16,
         width: "50%",
         margin: "auto",
-        marginTop: 32,
+        marginTop: 64,
         marginBottom: 32,
       }}
     >

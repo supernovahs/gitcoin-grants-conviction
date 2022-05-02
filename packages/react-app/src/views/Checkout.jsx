@@ -1,5 +1,5 @@
 import { Button, Input, Row, Col, List, Select, Skeleton, Statistic, Avatar } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DeleteOutlined, LockOutlined } from "@ant-design/icons";
 import { ethers } from "ethers";
 import { useHistory } from "react-router-dom";
@@ -10,6 +10,15 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
   const [cartTotal, setCartTotal] = useState(0);
   const history = useHistory();
 
+  useEffect(() => {
+    setCartTotal(
+      cart.reduce((runnintTotal, _item) => {
+        const value = _item.amount ? parseFloat(_item.amount) : 0;
+        return runnintTotal + value;
+      }, 0),
+    );
+  }, [cart]);
+
   return (
     <div
       style={{
@@ -17,7 +26,7 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
         padding: 16,
         width: "50%",
         margin: "auto",
-        marginTop: 32,
+        marginTop: 64,
         marginBottom: 32,
       }}
     >
