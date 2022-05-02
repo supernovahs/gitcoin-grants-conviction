@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract GTC is ERC20 {
 
   constructor() ERC20("Gitcoin","GTC") {
-    _mint(msg.sender,100 ether);
+    _mint(msg.sender,10000 ether);
   }
 
   function mint(address _to, uint256 _amount) external {
