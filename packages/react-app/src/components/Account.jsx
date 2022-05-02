@@ -55,6 +55,7 @@ export default function Account({
   logoutOfWeb3Modal,
   blockExplorer,
   isContract,
+  fontSize,
 }) {
   const { currentTheme } = useThemeSwitcher();
 
@@ -93,8 +94,15 @@ export default function Account({
     <span>
       {web3Modal && web3Modal.cachedProvider ? (
         <>
-          {address && <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />}
-          <Balance address={address} provider={localProvider} price={price} />
+          {address && (
+            <Address
+              address={address}
+              ensProvider={mainnetProvider}
+              blockExplorer={blockExplorer}
+              fontSize={fontSize}
+            />
+          )}
+          <Balance address={address} provider={localProvider} price={price} size={fontSize} />
           <Wallet
             address={address}
             provider={localProvider}
@@ -108,16 +116,23 @@ export default function Account({
         ""
       ) : isContract ? (
         <>
-          {address && <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />}
-          <Balance address={address} provider={localProvider} price={price} />
+          {address && (
+            <Address
+              address={address}
+              ensProvider={mainnetProvider}
+              blockExplorer={blockExplorer}
+              fontSize={fontSize}
+            />
+          )}
+          <Balance address={address} provider={localProvider} price={price} size={fontSize} />
         </>
       ) : (
         ""
       )}
       {useBurner && web3Modal && !web3Modal.cachedProvider ? (
         <>
-          <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />
-          <Balance address={address} provider={localProvider} price={price} />
+          <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} fontSize={fontSize} />
+          <Balance address={address} provider={localProvider} price={price} size={fontSize} />
           <Wallet
             address={address}
             provider={localProvider}

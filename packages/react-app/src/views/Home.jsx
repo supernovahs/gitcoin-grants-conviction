@@ -1,124 +1,178 @@
-import { useContractReader } from "eth-hooks";
+import { Button, Card, Input, Spin, Row, Col, notification } from "antd";
+import React, { useEffect, useState, useCallback } from "react";
+import { EyeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import axios from "axios";
 import { ethers } from "ethers";
-import React from "react";
-import { Link } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroller";
+import { useDebounce } from "use-debounce";
 
-/**
- * web3 props can be passed from '../App.jsx' into your local view component for use
- * @param {*} yourLocalBalance balance on current network
- * @param {*} readContracts contracts from current chain already pre-loaded using ethers contract module. More here https://docs.ethers.io/v5/api/contract/contract/
- * @returns react component
- **/
-function Home({ yourLocalBalance, readContracts }) {
-  // you can also use hooks locally in your component of choice
-  // in this case, let's keep track of 'purpose' variable from our contract
-  const purpose = ""; // useContractReader(readContracts, "YourContract", "purpose");
+const { Meta } = Card;
+
+export default function Home({ tokenBalance, cart, setCart }) {
+  const [items, setItems] = useState([]);
+  const [nextStart, setNextStart] = useState(0);
+  const [fetching, setFetching] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [debouncedFilter] = useDebounce(filter, 500);
+  const [totalGrants, setTotalGrants] = useState(0);
+
+  const limit = 50;
+
+  let reset = false;
+
+  const axiosConfig = {
+    baseURL: "http://localhost:3001/grants",
+    timeout: 30000,
+  };
+
+  const axiosClient = axios.create(axiosConfig);
+
+  const fetchGrants = useCallback(async () => {
+    if (fetching || (nextStart === -1 && !reset)) {
+      return;
+    }
+    let start = nextStart;
+    if (reset) {
+      start = 0;
+      setNextStart(0);
+      reset = false;
+    }
+    setFetching(true);
+
+    let queryString = `?_start=${start}&_limit=${limit}`;
+    if (filter) {
+      queryString += `&q=${filter}`;
+    }
+
+    try {
+      let res = await axiosClient.get(queryString);
+      // Shuffle the results
+      // We will need to repro this on the entire dataset on the backend
+      let data = res.data.sort(() => Math.random() - 0.5);
+
+      if (start === 0) {
+        setItems(data);
+      } else {
+        setItems([...items, ...data]);
+      }
+
+      setTotalGrants(res.headers["x-total-count"]);
+
+      if (res.headers["x-total-count"] > start + limit) {
+        setNextStart(start + limit);
+      } else {
+        setNextStart(-1);
+      }
+    } finally {
+      setFetching(false);
+    }
+  }, [items, fetching, nextStart, debouncedFilter]);
+
+  useEffect(() => {
+    fetchGrants();
+  }, []);
+
+  useEffect(() => {
+    if (filter.length < 4 && filter.length > 0) return;
+    reset = true;
+    fetchGrants();
+  }, [debouncedFilter]);
+
+  useEffect(() => {
+    if (tokenBalance) console.log("Your new token balance is", ethers.utils.formatEther(tokenBalance?.toString()));
+  }, [tokenBalance]);
+
+  const hasMoreItems = nextStart !== -1;
 
   return (
     <div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>📝</span>
-        This Is Your App Home. You can start editing it in{" "}
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          packages/react-app/src/views/Home.jsx
-        </span>
-      </div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>✏️</span>
-        Edit your smart contract{" "}
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          YourContract.sol
-        </span>{" "}
-        in{" "}
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          packages/hardhat/contracts
-        </span>
-      </div>
-      {!purpose ? (
-        <div style={{ margin: 32 }}>
-          <span style={{ marginRight: 8 }}>👷‍♀️</span>
-          You haven't deployed your contract yet, run
-          <span
-            className="highlight"
-            style={{
-              marginLeft: 4,
-              /* backgroundColor: "#f9f9f9", */ padding: 4,
-              borderRadius: 4,
-              fontWeight: "bolder",
+      <div
+        style={{
+          border: "1px solid #cccccc",
+          padding: 16,
+          width: 400,
+          margin: "auto",
+          marginTop: 32,
+          marginBottom: 32,
+        }}
+      >
+        <h2>Search</h2>
+        <div style={{ margin: 4 }}>
+          <Input
+            onChange={e => {
+              setFilter(e.target.value);
             }}
-          >
-            yarn chain
-          </span>{" "}
-          and{" "}
-          <span
-            className="highlight"
-            style={{
-              marginLeft: 4,
-              /* backgroundColor: "#f9f9f9", */ padding: 4,
-              borderRadius: 4,
-              fontWeight: "bolder",
-            }}
-          >
-            yarn deploy
-          </span>{" "}
-          to deploy your first contract!
+          />
         </div>
-      ) : (
-        <div style={{ margin: 32 }}>
-          <span style={{ marginRight: 8 }}>🤓</span>
-          The "purpose" variable from your contract is{" "}
-          <span
-            className="highlight"
-            style={{
-              marginLeft: 4,
-              /* backgroundColor: "#f9f9f9", */ padding: 4,
-              borderRadius: 4,
-              fontWeight: "bolder",
-            }}
-          >
-            {purpose}
-          </span>
-        </div>
-      )}
+      </div>
 
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>🤖</span>
-        An example prop of your balance{" "}
-        <span style={{ fontWeight: "bold", color: "green" }}>({ethers.utils.formatEther(yourLocalBalance)})</span> was
-        passed into the
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          Home.jsx
-        </span>{" "}
-        component from
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          App.jsx
-        </span>
+      <div style={{ display: "block" }}>
+        <div style={{ float: "left", marginBottom: 16 }}>Total grants found: {totalGrants}</div>
       </div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>💭</span>
-        Check out the <Link to="/hints">"Hints"</Link> tab for more tips.
-      </div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>🛠</span>
-        Tinker with your smart contract using the <Link to="/debug">"Debug Contract"</Link> tab.
-      </div>
+      <div style={{ clear: "both" }}></div>
+
+      <InfiniteScroll
+        loadMore={() => {
+          !fetching && fetchGrants();
+        }}
+        hasMore={hasMoreItems}
+        loader={
+          <div className="loader" key={0}>
+            <Spin />
+          </div>
+        }
+      >
+        <Row gutter={[24, 16]}>
+          {items.map(grant => {
+            return (
+              <Col span={6} key={grant.id}>
+                <Card
+                  hoverable
+                  style={{ width: 240 }}
+                  cover={<img alt="example" src={grant.img} />}
+                  actions={[
+                    <Button
+                      onClick={() => {
+                        window.open(grant.url, "_blank");
+                      }}
+                      type="default"
+                      shape="circle"
+                      icon={<EyeOutlined key="view-details" />}
+                    />,
+                    <Button
+                      disabled={cart.includes(grant)}
+                      onClick={() => {
+                        if (cart.includes(grant)) {
+                          notification["error"]({
+                            message: "You already have this grant in your cart!",
+                            description: `The grant for ${grant.title} is already in your cart.`,
+                            duration: 3,
+                            placement: "bottomRight",
+                          });
+                          return;
+                        }
+                        setCart([...cart, grant], () => {
+                          notification["success"]({
+                            message: "Added to cart",
+                            description: `The grant for ${grant.title} has been added to your cart.`,
+                            duration: 3,
+                            placement: "bottomRight",
+                          });
+                        });
+                      }}
+                      type="default"
+                      shape="circle"
+                      icon={<ShoppingCartOutlined key="add-to-cart" />}
+                    />,
+                  ]}
+                >
+                  <Meta title={grant.title} description={grant.description.substr(0, 100) + "..."} />
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      </InfiniteScroll>
     </div>
   );
 }
-
-export default Home;

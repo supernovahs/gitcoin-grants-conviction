@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 // Hook from useHooks! (https://usehooks.com/useLocalStorage/)
 export default function useLocalStorage(key, initialValue, ttl) {
   // State to store our value
@@ -28,9 +28,12 @@ export default function useLocalStorage(key, initialValue, ttl) {
     }
   });
 
+  const cbRef = useRef(null); // init mutable ref container for callbacks
+
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
-  const setValue = value => {
+  const setValue = useCallback((value, cb) => {
+    cbRef.current = cb;
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore = value instanceof Function ? value(storedValue) : value;
@@ -54,7 +57,16 @@ export default function useLocalStorage(key, initialValue, ttl) {
       // A more advanced implementation would handle the error case
       console.log(error);
     }
-  };
+  });
+
+  useEffect(() => {
+    // cb.current is `null` on initial render,
+    // so we only invoke callback on state *updates*
+    if (cbRef.current) {
+      cbRef.current(storedValue);
+      cbRef.current = null; // reset callback after execution
+    }
+  }, [storedValue]);
 
   return [storedValue, setValue];
 }
