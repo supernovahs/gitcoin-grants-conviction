@@ -6,6 +6,10 @@ import { ethers } from "ethers";
 import InfiniteScroll from "react-infinite-scroller";
 import { useDebounce } from "use-debounce";
 
+import { BUIDL_GUIDL_API_ENDPOINT } from "../constants";
+
+require("dotenv").config();
+
 const { Meta } = Card;
 
 export default function Home({ tokenBalance, cart, setCart }) {
@@ -21,7 +25,7 @@ export default function Home({ tokenBalance, cart, setCart }) {
   let reset = false;
 
   const axiosConfig = {
-    baseURL: "http://localhost:3001/grants",
+    baseURL: BUIDL_GUIDL_API_ENDPOINT + "/grants",
     timeout: 30000,
   };
 

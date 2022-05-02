@@ -5,14 +5,14 @@ import React from "react";
 
 export default function Header({ link, title, subTitle }) {
   return (
-    <a href={link} target="_blank" rel="noopener noreferrer">
+    <a href={link}>
       <PageHeader title={title} subTitle={subTitle} style={{ cursor: "pointer" }} />
     </a>
   );
 }
 
 Header.defaultProps = {
-  link: "https://github.com/0xDarni/scaffold-eth/tree/conviction-voting-gitcoin",
+  link: "/",
   title: "Gitcoin Conviction Voting",
   subTitle: "Signal your support to the community",
 };

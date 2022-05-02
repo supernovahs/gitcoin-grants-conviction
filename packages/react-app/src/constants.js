@@ -9,6 +9,8 @@ export const BLOCKNATIVE_DAPPID = "0b58206a-f3c0-4701-a62f-73c7243e8c77";
 
 export const ALCHEMY_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
+export const BUIDL_GUIDL_API_ENDPOINT = "https://bgapi.v37.io";
+
 export const NETWORKS = {
   localhost: {
     name: "localhost",
@@ -177,7 +179,7 @@ export const NETWORKS = {
     color: "#53CBC9",
     chainId: 1284,
     blockExplorer: "https://moonscan.io",
-    rpcUrl: "https://rpc.api.moonbeam.network", 
+    rpcUrl: "https://rpc.api.moonbeam.network",
   },
   moonriver: {
     name: "moonriver",
@@ -200,7 +202,7 @@ export const NETWORKS = {
     chainId: 1281,
     blockExplorer: "https://moonbeam-explorer.netlify.app/",
     rpcUrl: "http://127.0.0.1:9933",
-  }
+  },
 };
 
 export const NETWORK = chainId => {
