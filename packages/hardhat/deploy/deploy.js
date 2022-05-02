@@ -34,7 +34,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   await tx1.wait();
 
   const tx2 = await GTC.transfer(
-    "0x2c2155608df1FD06966e8AfEeA8257e9eB98609B", // second address
+    "0x3045313ad5d09035C69dA75E59a163c754D1b442", // second address
     ethers.utils.parseEther("10")
   );
   await tx2.wait();

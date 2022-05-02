@@ -79,7 +79,7 @@ export default function ExampleUI({
     console.log("tx address", readContracts.GTCStaking.address);
     console.log("tx amount", BigNumber.from(cartTotal));
     const result = tx(
-      writeContracts.GTC.approve(readContracts.GTCStaking.address, BigNumber.from(cartTotal)),
+      writeContracts.GTC.approve(readContracts.GTCStaking.address, ethers.utils.parseEther(cartTotal.toString())),
       update => {
         console.log("📡 Transaction Update:", update);
         if (update && (update.status === "confirmed" || update.status === 1)) {
@@ -94,18 +94,21 @@ export default function ExampleUI({
               " gwei",
           );
           // Staking
-          return;
           const votes = cart.map(item => {
+            console.log("tx duration", Math.floor(Date.now() / 1000) + 60 * 60 * 24 * item.duration);
             return {
               grantId: item.id,
-              amount: BigNumber.from(item.amount ?? 0),
-              lockedUntil: BigNumber.from(Date.now() / 1000 + 60 * 60 * 24 * item.duration),
+              amount: ethers.utils.parseEther(item.amount ? item.amount.toString() : "0"),
+              lockedUntil: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * item.duration,
             };
           });
           console.log("🗳 Sending votes:", votes);
           tx(writeContracts.GTCStaking.voteBatch(votes), update => {
             console.log("📡 Transaction Update:", update);
             if (update && (update.status === "confirmed" || update.status === 1)) {
+              setCart([]);
+              setCartTotal(0);
+              onClose();
               console.log(" 🍾 Transaction " + update.hash + " finished!");
               console.log(
                 " ⛽️ " +
@@ -270,7 +273,7 @@ export default function ExampleUI({
               title="Staked"
               value={cartTotal}
               valueStyle={{
-                color: tokenBalance?.gt(ethers.utils.parseEther(cartTotal.toString())) ? "#3f8600" : "#cf1322",
+                color: tokenBalance?.gte(ethers.utils.parseEther(cartTotal.toString())) ? "#3f8600" : "#cf1322",
               }}
               suffix={"/ " + (tokenBalance ? ethers.utils.formatEther(tokenBalance) : "...")}
             />

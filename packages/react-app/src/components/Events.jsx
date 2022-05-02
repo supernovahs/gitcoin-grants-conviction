@@ -49,7 +49,7 @@ export default function Events({
       console.log("FOUND AN EVENT OF MINE!");
       let exists;
       for (let d in deposits) {
-        if (deposits[d].voteID.toNumber() === events[e].args.voteID.toNumber()) {
+        if (deposits[d].voteId.toNumber() === events[e].args.voteId.toNumber()) {
           exists = true;
           break;
         }
@@ -74,22 +74,21 @@ export default function Events({
   const [totalVotes, setTotalVotes] = useState([]);
 
   useEffect(async () => {
-    return false;
     console.log("deposits have changed...");
     let statusObj = {};
     let calcedAmountObj = {};
     let totalVotesObj = {};
     for (let d in deposits) {
-      let status = await contracts.YourContract.voteStatus(deposits[d].voteID);
-      console.log("STATUS OF ", deposits[d].voteID, "IS", status);
+      let status = await contracts.GTCStaking.areTokensLocked(deposits[d].voteId);
+      console.log("STATUS OF ", deposits[d].voteId, "IS", status);
       let calced =
         parseFloat(ethers.utils.formatEther(deposits[d].amount)) +
         convictionMultiplier *
-          (currentTimestamp - deposits[d].timestamp.toNumber()) *
+          (currentTimestamp - deposits[d].lockedSince.toNumber()) *
           ethers.utils.formatEther(deposits[d].amount);
-      console.log("CALC OF ", deposits[d].voteID, "IS", calced);
-      statusObj[deposits[d].voteID] = status;
-      calcedAmountObj[deposits[d].voteID] = calced;
+      console.log("CALC OF ", deposits[d].voteId, "IS", calced);
+      statusObj[deposits[d].voteId] = status;
+      calcedAmountObj[deposits[d].voteId] = calced;
       if (status) {
         if (!totalVotesObj[deposits[d].vote]) totalVotesObj[deposits[d].vote] = 0;
         totalVotesObj[deposits[d].vote] += calced;
@@ -122,49 +121,19 @@ export default function Events({
         renderItem={item => {
           return (
             <List.Item /*key={item.blockNumber + "_" + item.args.sender + "_" + item.args.purpose}*/>
-              <div>#{item.args.voteID.toNumber()}</div>
+              <div>#{item.args.voteId.toNumber()}</div>
               <div>
                 <Address address={item.args.voter} ensProvider={mainnetProvider} fontSize={16} />
               </div>
               <div> Ξ{item.args.amount && ethers.utils.formatEther(item.args.amount)}</div>
               <div> {item.args.vote}</div>
-              <div> {currentTimestamp - item.args.timestamp.toNumber()}</div>
+              <div> {currentTimestamp - item.args.lockedSince.toNumber()}</div>
               <div> {ethers.utils.formatEther(item.args.amount)} </div>
               <div>
                 {" "}
-                <b>{calcedAmount[item.args.voteID]}</b>{" "}
+                <b>{calcedAmount[item.args.voteId]}</b>{" "}
               </div>
-              <div>{depositStatus[item.args.voteID] ? " ACTIVE " : " CLOSED "}</div>
-              <div>
-                {" "}
-                <Button
-                  style={{ marginTop: 8 }}
-                  disabled={item.args.voter !== address || !depositStatus[item.args.voteID]}
-                  onClick={async () => {
-                    /* look how you call setPurpose on your contract: */
-                    /* notice how you pass a call back for tx updates too */
-                    /*const result = tx(writeContracts.YourContract.withdraw(item.args.voteID.toNumber()), update => {
-                      console.log("📡 Transaction Update:", update);
-                      if (update && (update.status === "confirmed" || update.status === 1)) {
-                        console.log(" 🍾 Transaction " + update.hash + " finished!");
-                        console.log(
-                          " ⛽️ " +
-                            update.gasUsed +
-                            "/" +
-                            (update.gasLimit || update.gas) +
-                            " @ " +
-                            parseFloat(update.gasPrice) / 1000000000 +
-                            " gwei",
-                        );
-                      }
-                    });
-                    console.log("awaiting metamask/web3 confirm result...", result);
-                    console.log(await result);*/
-                  }}
-                >
-                  Close
-                </Button>
-              </div>
+              <div>{depositStatus[item.args.voteId] ? " LOCKED " : " UNLOCKED "}</div>
             </List.Item>
           );
         }}
