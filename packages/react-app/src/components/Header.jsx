@@ -12,7 +12,7 @@ export default function Header({ link, title, subTitle }) {
 }
 
 Header.defaultProps = {
-  link: "https://github.com/austintgriffith/scaffold-eth",
+  link: "https://github.com/0xDarni/scaffold-eth/tree/conviction-voting-gitcoin",
   title: "Gitcoin Conviction Voting",
   subTitle: "Signal your support to the community",
 };

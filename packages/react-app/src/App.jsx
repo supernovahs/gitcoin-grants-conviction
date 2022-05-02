@@ -19,6 +19,7 @@ import {
   Faucet,
   GasGauge,
   Header,
+  Footer,
   Ramp,
   ThemeSwitch,
   NetworkDisplay,
@@ -409,6 +410,7 @@ function App(props) {
           </Col>
         </Row>
       </div>
+      <Footer />
     </div>
   );
 }
