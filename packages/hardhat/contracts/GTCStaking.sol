@@ -46,7 +46,7 @@ contract GTCStaking {
   }
 
   function areTokensLocked(uint256 _voteId) external view returns (bool) {
-    return votes[_voteId].lockedUntil < block.timestamp;
+    return votes[_voteId].lockedUntil > block.timestamp;
   }
 
   function vote(uint256 _grantId, uint256 _amount, uint256 _lockedUntil) public {
