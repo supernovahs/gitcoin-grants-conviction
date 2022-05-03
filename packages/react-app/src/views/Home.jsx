@@ -103,6 +103,7 @@ export default function Home({ tokenBalance, cart, setCart }) {
         <h2>Search</h2>
         <div style={{ margin: 4 }}>
           <Input
+            placeholder="Type to filter grants"
             onChange={e => {
               setFilter(e.target.value);
             }}
