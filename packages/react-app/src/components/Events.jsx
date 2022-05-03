@@ -29,9 +29,6 @@ export default function Events({
   mainnetProvider,
   startBlock,
   currentTimestamp,
-  tx,
-  readContracts,
-  writeContracts,
 }) {
   // 📟 Listen for broadcast events
   const events = useEventListener(contracts, contractName, eventName, localProvider, startBlock);

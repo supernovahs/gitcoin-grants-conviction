@@ -11,6 +11,8 @@ export const ALCHEMY_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 export const BUIDL_GUIDL_API_ENDPOINT = "https://bgapi.v37.io";
 
+export const CONVICTION_MULTIPLIER = 0.001;
+
 export const NETWORKS = {
   localhost: {
     name: "localhost",

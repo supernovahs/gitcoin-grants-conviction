@@ -3,11 +3,13 @@ import React, { useEffect, useState } from "react";
 import { DeleteOutlined, LockOutlined } from "@ant-design/icons";
 import { ethers } from "ethers";
 import { useHistory } from "react-router-dom";
+import { calculateConviction } from "../lib/ConvictionCalculator";
 
 const { Option } = Select;
 
 export default function Checkout({ tokenBalance, cart, setCart }) {
   const [cartTotal, setCartTotal] = useState(0);
+  const [convictionPerItem, setConvictionPerItem] = useState([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -50,35 +52,46 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
             <Skeleton loading={false} title={false} active>
               <List.Item.Meta avatar={<Avatar src={item.img} />} title={item.title} />
               <div>
-                <Select
-                  placeholder="Duration"
-                  onChange={value => {
-                    item.duration = value;
-                  }}
-                >
-                  <Option value="1">1 day</Option>
-                  <Option value="3">3 days</Option>
-                  <Option value="7">7 days</Option>
-                  <Option value="14">14 days</Option>
-                  <Option value="30">30 days</Option>
-                </Select>
-              </div>
-              <div>
-                <Input
-                  type={"number"}
-                  placeholder="0"
-                  value={item.amount ?? 0}
-                  onChange={e => {
-                    item.amount = Number.isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value);
-                    e.target.value = item.amount;
-                    setCartTotal(
-                      cart.reduce((runnintTotal, _item) => {
-                        const value = _item.amount ? parseFloat(_item.amount) : 0;
-                        return runnintTotal + value;
-                      }, 0),
-                    );
-                  }}
-                />
+                <div style={{ float: "left" }}>
+                  <Select
+                    placeholder="Duration"
+                    onChange={value => {
+                      item.duration = value;
+                      setConvictionPerItem({
+                        ...convictionPerItem,
+                        [item.id]: calculateConviction(item.amount ?? 0, item.duration ?? 0),
+                      });
+                    }}
+                  >
+                    <Option value="1">1 day</Option>
+                    <Option value="3">3 days</Option>
+                    <Option value="7">7 days</Option>
+                    <Option value="14">14 days</Option>
+                    <Option value="30">30 days</Option>
+                  </Select>
+                </div>
+                <div style={{ float: "right", marginLeft: "16px" }}>
+                  <Input
+                    type={"number"}
+                    placeholder="0"
+                    value={item.amount ?? 0}
+                    onChange={e => {
+                      item.amount = Number.isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value);
+                      e.target.value = item.amount;
+                      setConvictionPerItem({
+                        ...convictionPerItem,
+                        [item.id]: calculateConviction(item.amount ?? 0, item.duration ?? 0),
+                      });
+                      setCartTotal(
+                        cart.reduce((runnintTotal, _item) => {
+                          const value = _item.amount ? parseFloat(_item.amount) : 0;
+                          return runnintTotal + value;
+                        }, 0),
+                      );
+                    }}
+                  />
+                </div>
+                <div>Conviction impact: {convictionPerItem[item.id]?.toFixed(2) ?? "0.00"}</div>
               </div>
             </Skeleton>
           </List.Item>
