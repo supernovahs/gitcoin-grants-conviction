@@ -89,7 +89,7 @@ export default function Home({ tokenBalance, cart, setCart }) {
   const hasMoreItems = nextStart !== -1;
 
   return (
-    <div style={{ maxWidth: "800px" }}>
+    <div style={{ maxWidth: "1280px", marginLeft: "auto", marginRight: "auto" }}>
       <div
         style={{
           border: "1px solid #cccccc",
