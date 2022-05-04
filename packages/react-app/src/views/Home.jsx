@@ -1,10 +1,13 @@
 import { Button, Card, Input, Spin, Row, Col, notification } from "antd";
 import React, { useEffect, useState, useCallback } from "react";
-import { EyeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { InfoOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { ethers } from "ethers";
 import InfiniteScroll from "react-infinite-scroller";
 import { useDebounce } from "use-debounce";
+import { List } from "antd";
+
+import VoteItem from "../components/VoteItem";
 
 import { BUIDL_GUIDL_API_ENDPOINT } from "../constants";
 
@@ -12,7 +15,7 @@ require("dotenv").config();
 
 const { Meta } = Card;
 
-export default function Home({ tokenBalance, cart, setCart }) {
+export default function Home({ tokenBalance, cart, setCart, votes, tx, readContracts, writeContracts }) {
   const [items, setItems] = useState([]);
   const [nextStart, setNextStart] = useState(0);
   const [fetching, setFetching] = useState(false);
@@ -89,95 +92,131 @@ export default function Home({ tokenBalance, cart, setCart }) {
   const hasMoreItems = nextStart !== -1;
 
   return (
-    <div style={{ maxWidth: "1280px", marginLeft: "auto", marginRight: "auto" }}>
-      <div
-        style={{
-          border: "1px solid #cccccc",
-          padding: 16,
-          width: 400,
-          margin: "auto",
-          marginTop: 64,
-          marginBottom: 32,
-        }}
-      >
-        <h2>Search</h2>
-        <div style={{ margin: 4 }}>
-          <Input
-            placeholder="Type to filter grants"
-            onChange={e => {
-              setFilter(e.target.value);
-            }}
+    <>
+      {votes && (
+        <div
+          style={{
+            padding: 16,
+            paddingBottom: 0,
+            width: "50%",
+            margin: "auto",
+            marginTop: 16,
+            marginBottom: 0,
+          }}
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={votes}
+            renderItem={item => (
+              <VoteItem item={item} tx={tx} readContracts={readContracts} writeContracts={writeContracts} />
+            )}
           />
         </div>
-      </div>
+      )}
 
-      <div style={{ display: "block" }}>
-        <div style={{ float: "left", marginBottom: 16 }}>Total grants found: {totalGrants}</div>
-      </div>
-      <div style={{ clear: "both" }}></div>
-
-      <InfiniteScroll
-        loadMore={() => {
-          !fetching && fetchGrants();
-        }}
-        hasMore={hasMoreItems}
-        loader={
-          <div className="loader" key={0}>
-            <Spin />
+      <div style={{ maxWidth: "1280px", marginLeft: "auto", marginRight: "auto" }}>
+        <div
+          style={{
+            padding: 16,
+            width: 400,
+            margin: "auto",
+            marginTop: 32,
+            marginBottom: 32,
+          }}
+        >
+          <div style={{ margin: 4 }}>
+            <Input
+              placeholder="Search"
+              onChange={e => {
+                setFilter(e.target.value);
+              }}
+            />
           </div>
-        }
-      >
-        <Row gutter={[24, 16]}>
-          {items.map(grant => {
-            return (
-              <Col span={6} key={grant.id}>
-                <Card
-                  hoverable
-                  style={{ width: 240 }}
-                  cover={<img alt="example" src={grant.img} />}
-                  actions={[
-                    <Button
-                      onClick={() => {
-                        window.open(grant.url, "_blank");
-                      }}
-                      type="default"
-                      shape="circle"
-                      icon={<EyeOutlined key="view-details" />}
-                    />,
-                    <Button
-                      disabled={cart.includes(grant)}
-                      onClick={() => {
-                        if (cart.includes(grant)) {
-                          notification["error"]({
-                            message: "You already have this grant in your cart!",
-                            description: `The grant for ${grant.title} is already in your cart.`,
-                            duration: 3,
-                            placement: "bottomRight",
+        </div>
+
+        <div style={{ display: "block" }}>
+          <div style={{ float: "left", marginBottom: 16 }}>Total grants found: {totalGrants}</div>
+        </div>
+        <div style={{ clear: "both" }}></div>
+
+        <InfiniteScroll
+          loadMore={() => {
+            !fetching && fetchGrants();
+          }}
+          hasMore={hasMoreItems}
+          loader={
+            <div className="loader" key={0}>
+              <Spin />
+            </div>
+          }
+        >
+          <Row gutter={[24, 16]}>
+            {items.map(grant => {
+              return (
+                <Col span={6} key={grant.id}>
+                  <Card
+                    hoverable
+                    style={{ width: 240 }}
+                    cover={
+                      <>
+                        <Button
+                          style={{
+                            position: "relative",
+                            top: "8px",
+                            right: "8px",
+                            width: "8px",
+                            float: "right",
+                            marginBottom: "-24px",
+                          }}
+                          onClick={() => {
+                            window.open(grant.url, "_blank");
+                          }}
+                          type="default"
+                          size="small"
+                          shape="circle"
+                          icon={<InfoOutlined key="view-details" />}
+                        />
+                        <img alt={grant.title} src={grant.img} />
+                      </>
+                    }
+                    actions={[
+                      <Button
+                        disabled={cart.includes(grant)}
+                        onClick={() => {
+                          if (cart.includes(grant)) {
+                            notification["error"]({
+                              message: "You already have this grant in your cart!",
+                              description: `The grant for ${grant.title} is already in your cart.`,
+                              duration: 3,
+                              placement: "topRight",
+                            });
+                            return;
+                          }
+                          setCart([...cart, grant], () => {
+                            notification["success"]({
+                              message: "Added to cart",
+                              description: `The grant for ${grant.title} has been added to your cart.`,
+                              duration: 3,
+                              placement: "topRight",
+                            });
                           });
-                          return;
-                        }
-                        setCart([...cart, grant], () => {
-                          notification["success"]({
-                            message: "Added to cart",
-                            description: `The grant for ${grant.title} has been added to your cart.`,
-                            duration: 3,
-                            placement: "bottomRight",
-                          });
-                        });
-                      }}
-                      type="default"
-                      shape="circle"
-                      icon={<ShoppingCartOutlined key="add-to-cart" />}
-                    />,
-                  ]}
-                >
-                  <Meta title={grant.title} description={grant.description.substr(0, 100) + "..."} />
-                </Card>
-              </Col>
-            );
-          })}
-        </Row>
-      </InfiniteScroll>
-    </div>
+                        }}
+                        type="primary"
+                        shape="round"
+                        icon={<ShoppingCartOutlined key="add-to-cart" />}
+                      >
+                        Stake GTC
+                      </Button>,
+                    ]}
+                  >
+                    <Meta title={grant.title} description={grant.description.substr(0, 100) + "..."} />
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        </InfiniteScroll>
+      </div>
+    </>
   );
 }

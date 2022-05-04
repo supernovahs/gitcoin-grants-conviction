@@ -24,7 +24,6 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
   return (
     <div
       style={{
-        border: "1px solid #cccccc",
         padding: 16,
         width: "50%",
         margin: "auto",
@@ -62,6 +61,7 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                         [item.id]: calculateConviction(item.amount ?? 0, item.duration ?? 0),
                       });
                     }}
+                    value={item.duration}
                   >
                     <Option value="1">1 day</Option>
                     <Option value="3">3 days</Option>
@@ -123,7 +123,7 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
             onClick={() => {
               history.push("/confirm");
             }}
-            disabled={tokenBalance?.lt(ethers.utils.parseEther(cartTotal.toString()))}
+            disabled={tokenBalance?.lt(ethers.utils.parseEther(cartTotal.toString())) || cartTotal === 0}
             type="primary"
             shape="round"
             icon={<LockOutlined key="view-details" />}

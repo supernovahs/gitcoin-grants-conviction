@@ -63,8 +63,9 @@ const initialNetwork = NETWORKS.rinkeby; // <------- select your target frontend
 // 😬 Sorry for all the console logging
 const DEBUG = true;
 const NETWORKCHECK = true;
-const USE_BURNER_WALLET = true; // toggle burner wallet feature
-const USE_NETWORK_SELECTOR = true;
+const USE_BURNER_WALLET = false; // toggle burner wallet feature
+const USE_NETWORK_SELECTOR = false;
+const HIDE_NETWORK = true;
 
 const web3Modal = Web3ModalSetup();
 
@@ -81,7 +82,6 @@ function App(props) {
   // reference './constants.js' for other networks
   const networkOptions = [initialNetwork.name, "mainnet", "localhost"];
 
-  //const [cart, setCart] = useStateCallback([]);
   const [cart, setCart] = useLocalStorage("cart", []);
 
   const [injectedProvider, setInjectedProvider] = useState();
@@ -267,11 +267,20 @@ function App(props) {
         targetNetwork={targetNetwork}
         logoutOfWeb3Modal={logoutOfWeb3Modal}
         USE_NETWORK_SELECTOR={USE_NETWORK_SELECTOR}
+        HIDE_NETWORK={HIDE_NETWORK}
       />
 
       <Switch>
         <Route exact path="/">
-          <Home tokenBalance={tokenBalance} cart={cart} setCart={setCart} />
+          <Home
+            tokenBalance={tokenBalance}
+            cart={cart}
+            setCart={setCart}
+            votes={votes}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+          />
         </Route>
         <Route exact path="/checkout">
           <Checkout tokenBalance={tokenBalance} cart={cart} setCart={setCart} />
@@ -358,32 +367,6 @@ function App(props) {
             blockExplorer={blockExplorer}
             fontSize={16}
           />
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            key="dash"
-            shape="round"
-            size="large"
-            icon={<DashboardOutlined key="dashboard" />}
-            onClick={() => {
-              history.push("/dashboard");
-            }}
-          >
-            Dashboard
-          </Button>
-          <Button
-            style={{ marginLeft: 20 }}
-            type="primary"
-            key="cart"
-            shape="round"
-            size="large"
-            icon={<ShoppingCartOutlined key="add-to-cart" />}
-            onClick={() => {
-              history.push("/checkout");
-            }}
-          >
-            Cart
-          </Button>
         </div>
         {yourLocalBalance.lte(ethers.BigNumber.from("0")) && (
           <FaucetHint localProvider={localProvider} targetNetwork={targetNetwork} address={address} />
@@ -391,7 +374,7 @@ function App(props) {
       </div>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
+      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10, display: "none" }}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
             <Ramp price={price} address={address} networks={NETWORKS} />
@@ -428,6 +411,24 @@ function App(props) {
             }
           </Col>
         </Row>
+      </div>
+
+      <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 20, padding: 10 }}>
+        {web3Modal.cachedProvider && (
+          <Button
+            style={{ marginLeft: 20 }}
+            type="primary"
+            key="cart"
+            shape="round"
+            size="large"
+            icon={<ShoppingCartOutlined key="add-to-cart" />}
+            onClick={() => {
+              history.push("/checkout");
+            }}
+          >
+            Cart {cart.length > 0 && `(${cart.length})`}
+          </Button>
+        )}
       </div>
       <Footer />
     </div>

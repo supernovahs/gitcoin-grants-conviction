@@ -66,7 +66,6 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
   return (
     <div
       style={{
-        border: "1px solid #cccccc",
         padding: 16,
         width: "50%",
         margin: "auto",

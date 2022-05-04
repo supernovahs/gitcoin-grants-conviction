@@ -9,7 +9,6 @@ export default function Dashboard({ votes, tx, readContracts, writeContracts }) 
   return (
     <div
       style={{
-        border: "1px solid #cccccc",
         padding: 16,
         width: "50%",
         margin: "auto",

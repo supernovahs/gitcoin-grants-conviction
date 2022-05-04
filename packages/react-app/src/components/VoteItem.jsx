@@ -1,6 +1,6 @@
 import { Button, List, Skeleton, Avatar, Statistic } from "antd";
 import React, { useEffect, useState } from "react";
-import { CheckOutlined } from "@ant-design/icons";
+import { UnlockOutlined } from "@ant-design/icons";
 import { ethers } from "ethers";
 import axios from "axios";
 
@@ -76,7 +76,7 @@ export default function VoteItem({ item, tx, readContracts, writeContracts }) {
           type="primary"
           shape="round"
           disabled={!canUnstake}
-          icon={<CheckOutlined key="view-details" />}
+          icon={<UnlockOutlined key="unstake" />}
         >
           Unstake
         </Button>
