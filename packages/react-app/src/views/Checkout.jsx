@@ -63,11 +63,12 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                     }}
                     value={item.duration}
                   >
-                    <Option value="1">1 day</Option>
-                    <Option value="3">3 days</Option>
-                    <Option value="7">7 days</Option>
-                    <Option value="14">14 days</Option>
-                    <Option value="30">30 days</Option>
+                    <Option value="1">1 hour</Option>
+                    <Option value="24">1 day</Option>
+                    <Option value="72">3 days</Option>
+                    <Option value="168">7 days</Option>
+                    <Option value="336">14 days</Option>
+                    <Option value="720">30 days</Option>
                   </Select>
                 </div>
                 <div style={{ float: "right", marginLeft: "16px" }}>

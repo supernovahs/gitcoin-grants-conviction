@@ -32,11 +32,11 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
           );
           // Staking
           const votes = cart.map(item => {
-            console.log("tx duration", Math.floor(Date.now() / 1000) + 60 * 60 * 24 * item.duration);
+            console.log("tx duration", Math.floor(Date.now() / 1000) + 60 * 60 * item.duration);
             return {
               grantId: item.id,
               amount: ethers.utils.parseEther(item.amount ? item.amount.toString() : "0"),
-              lockedUntil: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * item.duration,
+              lockedUntil: Math.floor(Date.now() / 1000) + 60 * 60 * item.duration,
             };
           });
           console.log("🗳 Sending votes:", votes);
