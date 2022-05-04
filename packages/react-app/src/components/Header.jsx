@@ -1,4 +1,4 @@
-import { PageHeader } from "antd";
+import { PageHeader, Tag, Statistic, Row } from "antd";
 import React from "react";
 
 // displays a page header
@@ -6,7 +6,20 @@ import React from "react";
 export default function Header({ link, title, subTitle }) {
   return (
     <a href={link}>
-      <PageHeader title={title} subTitle={subTitle} style={{ cursor: "pointer" }} />
+      <PageHeader
+        title={title}
+        subTitle={subTitle}
+        style={{ cursor: "pointer" }}
+        tags={
+          <Row>
+            <Tag color="blue" style={{ marginLeft: "20px" }}>
+              <a href="https://convictionvoting.wtf" target="_blank">
+                What is Conviction Voting
+              </a>
+            </Tag>
+          </Row>
+        }
+      />
     </a>
   );
 }
@@ -14,5 +27,5 @@ export default function Header({ link, title, subTitle }) {
 Header.defaultProps = {
   link: "/",
   title: "Gitcoin Conviction Voting",
-  subTitle: "Signal your support to the community",
+  subTitle: "Signal support for your favourite grants",
 };
