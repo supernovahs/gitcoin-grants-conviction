@@ -79,11 +79,11 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
         itemLayout="horizontal"
         dataSource={cart}
         renderItem={item => (
-          <List.Item>
+          <List.Item style={{opacity:item.amount?1.0:0.2}}>
             <Skeleton loading={false} title={false} active>
               <List.Item.Meta avatar={<Avatar src={item.img} />} title={item.title} />
               <div>
-                Duration: {item.duration} days
+                Duration: {item.duration ?? "0"} days
                 <br />
                 Amount: {item.amount ?? 0} GTC
               </div>

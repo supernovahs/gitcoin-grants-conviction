@@ -1,4 +1,5 @@
 import { PageHeader, Tag, Statistic, Row } from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import React from "react";
 
 // displays a page header
@@ -12,11 +13,9 @@ export default function Header({ link, title, subTitle }) {
         style={{ cursor: "pointer" }}
         tags={
           <Row>
-            <Tag color="blue" style={{ marginLeft: "20px" }}>
               <a href="https://convictionvoting.wtf" target="_blank">
-                What is Conviction Voting
+                <InfoCircleOutlined />
               </a>
-            </Tag>
           </Row>
         }
       />
@@ -26,6 +25,6 @@ export default function Header({ link, title, subTitle }) {
 
 Header.defaultProps = {
   link: "/",
-  title: "Gitcoin Conviction Voting",
-  subTitle: "Signal support for your favourite grants",
+  title: "🤖 Gitcoin Conviction 🗳",
+  subTitle: "Stake GTC to support your favorite grants!",
 };

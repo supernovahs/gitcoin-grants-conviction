@@ -26,11 +26,14 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
       style={{
         padding: 16,
         width: "50%",
+        minWidth: 700,
         margin: "auto",
         marginTop: 64,
         marginBottom: 32,
+        paddingBottom:128
       }}
     >
+      <h3 style={{paddingBottom:64}}>The longer you stake your GTC the stronger your vote.</h3>
       <List
         itemLayout="horizontal"
         dataSource={cart}
@@ -42,7 +45,7 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                 onClick={() => {
                   setCart(cart.filter(_item => _item.id !== item.id));
                 }}
-                type="primary"
+                type="secondary"
                 shape="circle"
                 icon={<DeleteOutlined key="remove-from-cart" />}
               />,
@@ -50,7 +53,10 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
           >
             <Skeleton loading={false} title={false} active>
               <List.Item.Meta avatar={<Avatar src={item.img} />} title={item.title} />
-              <div>
+              <div style={{position:"relative"}}>
+              <div style={{position:"absolute",left:70,width:300,top:0,opacity:0.5}}>Conviction: {convictionPerItem[item.id]?.toFixed(2) ?? "0.00"}</div>
+              </div>
+              <div style={{paddingBottom:32}}>
                 <div style={{ float: "left" }}>
                   <Select
                     placeholder="Duration"
@@ -74,6 +80,7 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                 <div style={{ float: "right", marginLeft: "16px" }}>
                   <Input
                     type={"number"}
+                    addonAfter={"GTC"}
                     placeholder="0"
                     value={item.amount ?? 0}
                     onChange={e => {
@@ -92,8 +99,8 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                     }}
                   />
                 </div>
-                <div>Conviction impact: {convictionPerItem[item.id]?.toFixed(2) ?? "0.00"}</div>
               </div>
+
             </Skeleton>
           </List.Item>
         )}

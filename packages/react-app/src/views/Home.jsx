@@ -118,14 +118,15 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
         <div
           style={{
             padding: 16,
-            width: 400,
+            width: 700,
             margin: "auto",
             marginTop: 32,
             marginBottom: 32,
           }}
         >
-          <div style={{ margin: 4 }}>
+          <div style={{ margin: 4}}>
             <Input
+              style={{fontSize:24, width:700}}
               placeholder="Search"
               onChange={e => {
                 setFilter(e.target.value);
@@ -134,7 +135,7 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
           </div>
         </div>
 
-        <div style={{ display: "block" }}>
+        <div style={{ display: "none" }}>
           <div style={{ float: "left", marginBottom: 16 }}>Total grants found: {totalGrants}</div>
         </div>
         <div style={{ clear: "both" }}></div>
@@ -195,13 +196,13 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
                           setCart([...cart, grant], () => {
                             notification["success"]({
                               message: "Added to cart",
-                              description: `The grant for ${grant.title} has been added to your cart.`,
+                              description: `${grant.title}`,
                               duration: 3,
                               placement: "topRight",
                             });
                           });
                         }}
-                        type="primary"
+                        type="secondary"
                         shape="round"
                         icon={<ShoppingCartOutlined key="add-to-cart" />}
                       >

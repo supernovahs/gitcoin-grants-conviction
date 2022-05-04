@@ -6,7 +6,7 @@ import Address from "./Address";
 import Balance from "./Balance";
 import Wallet from "./Wallet";
 
-/** 
+/**
   ~ What it does? ~
 
   Displays an Address, Balance, and Wallet as one Account component,
@@ -77,13 +77,13 @@ export default function Account({
       modalButtons.push(
         <Button
           key="loginbutton"
-          style={{ verticalAlign: "top", marginLeft: 8, marginTop: 4 }}
+          style={{ verticalAlign: "top", marginRight: 38, marginTop: 14, transform: "scale(1.4)" }}
           shape="round"
           size="large"
-          /* type={minimized ? "default" : "primary"}     too many people just defaulting to MM and having a bad time */
+          type={minimized ? "default" : "primary"}
           onClick={loadWeb3Modal}
         >
-          connect
+          👛 Connect Wallet
         </Button>,
       );
     }

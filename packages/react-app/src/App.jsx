@@ -33,7 +33,7 @@ import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { Home, Confirm, Checkout, Success, Dashboard } from "./views";
 import { useStaticJsonRPC, useLocalStorage } from "./hooks";
-import { ShoppingCartOutlined, DashboardOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, DashboardOutlined, RollbackOutlined } from "@ant-design/icons";
 
 require("dotenv").config();
 
@@ -413,10 +413,10 @@ function App(props) {
         </Row>
       </div>
 
-      <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 20, padding: 10 }}>
-        {web3Modal.cachedProvider && (
+      <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 50, padding: 10 }}>
+        {web3Modal.cachedProvider && location && location.pathname!="/checkout" && location.pathname!="/confirm" && (
           <Button
-            style={{ marginLeft: 20 }}
+            style={{ marginRight: 70,transform:"scale(2)"}}
             type="primary"
             key="cart"
             shape="round"
@@ -429,6 +429,23 @@ function App(props) {
             Cart {cart.length > 0 && `(${cart.length})`}
           </Button>
         )}
+      </div>
+      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 50, padding: 10 }}>
+      {web3Modal.cachedProvider && location && location.pathname=="/checkout" && (
+        <Button
+          style={{ marginLeft: 70,transform:"scale(2)"}}
+          type="secondary"
+          key="cart"
+          shape="round"
+          size="large"
+          icon={<RollbackOutlined key="view-details" />}
+          onClick={() => {
+            history.push("/");
+          }}
+        >
+          Back
+        </Button>
+      )}
       </div>
       <Footer />
     </div>
