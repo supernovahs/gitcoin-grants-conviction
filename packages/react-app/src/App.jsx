@@ -208,10 +208,12 @@ function App(props) {
       console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
       console.log("💵 yourLocalBalance", yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : "...");
       console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
-      console.log("📝 readContracts", readContracts);
       console.log("🌍 DAI contract on mainnet:", mainnetContracts);
       console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
+      console.log("📝 readContracts", readContracts);
       console.log("🔐 writeContracts", writeContracts);
+      console.log("💶 tokenBalance", tokenBalance);
+      console.log("🗳 votes", votes);
     }
   }, [
     mainnetProvider,
@@ -414,9 +416,9 @@ function App(props) {
       </div>
 
       <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 50, padding: 10 }}>
-        {web3Modal.cachedProvider && location && location.pathname!="/checkout" && location.pathname!="/confirm" && (
+        {web3Modal.cachedProvider && location && location.pathname != "/checkout" && location.pathname != "/confirm" && (
           <Button
-            style={{ marginRight: 70,transform:"scale(2)"}}
+            style={{ marginRight: 70, transform: "scale(2)" }}
             type="primary"
             key="cart"
             shape="round"
@@ -431,21 +433,21 @@ function App(props) {
         )}
       </div>
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 50, padding: 10 }}>
-      {web3Modal.cachedProvider && location && location.pathname=="/checkout" && (
-        <Button
-          style={{ marginLeft: 70,transform:"scale(2)"}}
-          type="secondary"
-          key="cart"
-          shape="round"
-          size="large"
-          icon={<RollbackOutlined key="view-details" />}
-          onClick={() => {
-            history.push("/");
-          }}
-        >
-          Back
-        </Button>
-      )}
+        {web3Modal.cachedProvider && location && location.pathname == "/checkout" && (
+          <Button
+            style={{ marginLeft: 70, transform: "scale(2)" }}
+            type="secondary"
+            key="cart"
+            shape="round"
+            size="large"
+            icon={<RollbackOutlined key="view-details" />}
+            onClick={() => {
+              history.push("/");
+            }}
+          >
+            Back
+          </Button>
+        )}
       </div>
       <Footer />
     </div>
