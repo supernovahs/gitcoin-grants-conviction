@@ -145,6 +145,11 @@
             "internalType": "uint256",
             "name": "lockedUntil",
             "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "released",
+            "type": "bool"
           }
         ],
         "internalType": "struct GTCStaking.Vote[]",
@@ -284,6 +289,11 @@
         "internalType": "uint256",
         "name": "lockedUntil",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "released",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",

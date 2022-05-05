@@ -3,7 +3,6 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "./GTC.sol";
 
-import "hardhat/console.sol";
 contract GTCStaking {
 
   event VoteCasted(
@@ -29,6 +28,7 @@ contract GTCStaking {
     uint256 grantId;
     uint256 lockedSince;
     uint256 lockedUntil;
+    bool released;
   }
 
   struct BatchVoteParam {
@@ -48,7 +48,7 @@ contract GTCStaking {
   }
 
   function areTokensLocked(uint256 _voteId) external view returns (bool) {
-    return votes[_voteId].lockedUntil > block.timestamp;
+    return votes[_voteId].lockedUntil > block.timestamp && !votes[_voteId].released;
   }
 
   function vote(uint256 _grantId, uint256 _amount, uint256 _lockedUntil) public {
@@ -67,7 +67,8 @@ contract GTCStaking {
       amount: _amount,
       grantId: _grantId,
       lockedSince: block.timestamp,
-      lockedUntil: _lockedUntil
+      lockedUntil: _lockedUntil,
+      released: false
     }));
 
     voterToVoteIds[msg.sender].push(voteId);
@@ -93,7 +94,9 @@ contract GTCStaking {
   function releaseTokens(uint256 _voteId) public {
     require(votes[_voteId].voter == msg.sender, "You can't release tokens that you don't own");
     require(votes[_voteId].lockedUntil < block.timestamp , "You can't release your tokens yet");
+    require(votes[_voteId].released == false , "Already released");
     
+    votes[_voteId].released = true;
     gtcToken.transfer(msg.sender, votes[_voteId].amount);
 
     emit TokensReleased(msg.sender, votes[_voteId].amount);

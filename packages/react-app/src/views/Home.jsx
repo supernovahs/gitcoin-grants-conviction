@@ -93,7 +93,7 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
 
   return (
     <>
-      {votes && (
+      {votes && votes.filter(_item => !_item.released).length > 0 && (
         <div
           style={{
             padding: 16,
@@ -106,7 +106,7 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
         >
           <List
             itemLayout="horizontal"
-            dataSource={votes}
+            dataSource={votes.filter(_item => !_item.released)}
             renderItem={item => (
               <VoteItem item={item} tx={tx} readContracts={readContracts} writeContracts={writeContracts} />
             )}
@@ -124,9 +124,9 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
             marginBottom: 32,
           }}
         >
-          <div style={{ margin: 4}}>
+          <div style={{ margin: 4 }}>
             <Input
-              style={{fontSize:24, width:700}}
+              style={{ fontSize: 24, width: 700 }}
               placeholder="Search"
               onChange={e => {
                 setFilter(e.target.value);

@@ -76,9 +76,9 @@ module.exports = {
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/460f40a260564ac4a4f4b3fffb032dad", // <---- YOUR INFURA ID! (or it won't work)
       //    url: "https://speedy-nodes-nyc.moralis.io/XXXXXXXXXXXXXXXXXXXXXXX/eth/rinkeby", // <---- YOUR MORALIS ID! (not limited to infura)
-      accounts: {
-        mnemonic: mnemonic(),
-      },
+      accounts: [
+        "0xe8abc32bf3a1a54a50a9a2419b8f00f145a050f033fb1cf925240a2d60e7d758",
+      ],
     },
     kovan: {
       url: "https://kovan.infura.io/v3/460f40a260564ac4a4f4b3fffb032dad", // <---- YOUR INFURA ID! (or it won't work)

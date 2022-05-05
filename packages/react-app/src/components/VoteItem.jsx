@@ -10,7 +10,8 @@ const { Countdown } = Statistic;
 export default function VoteItem({ item, tx, readContracts, writeContracts }) {
   const [loading, setLoading] = useState(true);
   const [grantDetails, setGrantDetails] = useState({});
-  const [canUnstake, setCanUnstake] = useState(false);
+  let nowInSeconds = Math.floor(new Date().getTime() / 1000);
+  const [canUnstake, setCanUnstake] = useState(nowInSeconds > item.lockedUntil);
 
   const handleUnstake = voteId => {
     console.log("tx address", readContracts.GTCStaking.address);
@@ -60,7 +61,7 @@ export default function VoteItem({ item, tx, readContracts, writeContracts }) {
           <Countdown
             valueStyle={{ fontSize: "16px" }}
             title="Time remaining"
-            value={(item.lockedUntil.toString() * 1000) / 24}
+            value={item.lockedUntil.toString() * 1000}
             format={`D [days], HH:mm:ss`}
             onFinish={() => {
               setCanUnstake(true);
