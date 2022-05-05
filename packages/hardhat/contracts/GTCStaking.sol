@@ -37,6 +37,7 @@ contract GTCStaking {
     /// @notice mapping which tracks the votes for a particular user.
     mapping(address => uint256[]) public voterToVoteIds;
 
+    /// @notice Vote struct.
     struct Vote {
         bool released;
         address voter;
@@ -47,6 +48,7 @@ contract GTCStaking {
         uint256 lockedUntil;
     }
 
+    /// @notice BatchVote struct.
     struct BatchVoteParam {
         uint256 grantId;
         uint256 amount;
@@ -147,7 +149,7 @@ contract GTCStaking {
     @dev Stake and get Voting rights in barch.
     @param _batch array of struct to stake into multiple grants.
     */
-    function voteBatch(BatchVoteParam[] memory _batch) public {
+    function voteBatch(BatchVoteParam[] memory _batch) external {
         for (uint256 i = 0; i < _batch.length; i++) {
             vote(_batch[i].grantId, _batch[i].amount, _batch[i].lockedUntil);
         }
@@ -157,7 +159,7 @@ contract GTCStaking {
     @dev Release tokens and give up votes.
     @param _voteId vote id.
     */
-    function releaseTokens(uint256 _voteId) public {
+    function releaseTokens(uint256 _voteId) external {
         if (votes[_voteId].voter != msg.sender) {
             revert NOT_OWNER();
         }
