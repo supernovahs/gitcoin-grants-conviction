@@ -18,15 +18,15 @@ error TOKENS_ALREADY_RELAEASED();
 */
 contract GTCStaking {
     event VoteCasted(
-        uint256 voteId,
+        uint56 voteId,
         address voter,
-        uint256 amount,
-        uint256 grantId,
-        uint256 lockedSince,
-        uint256 lockedUntil
+        uint152 amount,
+        uint48 grantId,
+        uint48 lockedSince,
+        uint48 lockedUntil
     );
 
-    event TokensReleased(address voter, uint256 amount);
+    event TokensReleased(address voter, uint152 amount);
 
     /// @notice gtc token contract instance.
     GTC gtcToken;
@@ -35,24 +35,24 @@ contract GTCStaking {
     Vote[] public votes;
 
     /// @notice mapping which tracks the votes for a particular user.
-    mapping(address => uint256[]) public voterToVoteIds;
+    mapping(address => uint56[]) public voterToVoteIds;
 
     /// @notice Vote struct.
     struct Vote {
         bool released;
         address voter;
-        uint256 voteId;
-        uint256 amount;
-        uint256 grantId;
-        uint256 lockedSince;
-        uint256 lockedUntil;
+        uint152 amount;
+        uint48 grantId;
+        uint56 voteId;
+        uint48 lockedSince;
+        uint48 lockedUntil;
     }
 
     /// @notice BatchVote struct.
     struct BatchVoteParam {
-        uint256 grantId;
-        uint256 amount;
-        uint256 lockedUntil;
+        uint48 grantId;
+        uint152 amount;
+        uint48 lockedUntil;
     }
 
     /**
@@ -75,7 +75,7 @@ contract GTCStaking {
     @dev Checks if tokens are locked or not.
     @return status of the tokens.
     */
-    function areTokensLocked(uint256 _voteId) external view returns (bool) {
+    function areTokensLocked(uint56 _voteId) external view returns (bool) {
         return
             votes[_voteId].lockedUntil > block.timestamp &&
             !votes[_voteId].released;
@@ -91,7 +91,7 @@ contract GTCStaking {
         view
         returns (Vote[] memory)
     {
-        uint256[] memory voteIds = voterToVoteIds[_voter];
+        uint56[] memory voteIds = voterToVoteIds[_voter];
         Vote[] memory votesForAddress = new Vote[](voteIds.length);
         for (uint256 i = 0; i < voteIds.length; i++) {
             votesForAddress[i] = votes[voteIds[i]];
@@ -106,9 +106,9 @@ contract GTCStaking {
     @param _lockedUntil lock duration.
     */
     function vote(
-        uint256 _grantId,
-        uint256 _amount,
-        uint256 _lockedUntil
+        uint48 _grantId,
+        uint152 _amount,
+        uint48 _lockedUntil
     ) public {
         if (_amount == 0) {
             revert INVALID_AMOUNT();
@@ -119,7 +119,7 @@ contract GTCStaking {
 
         gtcToken.transferFrom(msg.sender, address(this), _amount);
 
-        uint256 voteId = votes.length;
+        uint56 voteId = uint56(votes.length);
 
         votes.push(
             Vote({
@@ -127,7 +127,7 @@ contract GTCStaking {
                 voter: msg.sender,
                 amount: _amount,
                 grantId: _grantId,
-                lockedSince: block.timestamp,
+                lockedSince: uint48(block.timestamp),
                 lockedUntil: _lockedUntil,
                 released: false
             })
@@ -140,7 +140,7 @@ contract GTCStaking {
             msg.sender,
             _amount,
             _grantId,
-            block.timestamp,
+            uint48(block.timestamp),
             _lockedUntil
         );
     }

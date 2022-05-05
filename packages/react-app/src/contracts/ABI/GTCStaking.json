@@ -46,9 +46,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint152",
         "name": "amount",
-        "type": "uint256"
+        "type": "uint152"
       }
     ],
     "name": "TokensReleased",
@@ -59,9 +59,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint56",
         "name": "voteId",
-        "type": "uint256"
+        "type": "uint56"
       },
       {
         "indexed": false,
@@ -71,27 +71,27 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint152",
         "name": "amount",
-        "type": "uint256"
+        "type": "uint152"
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint48",
         "name": "grantId",
-        "type": "uint256"
+        "type": "uint48"
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint48",
         "name": "lockedSince",
-        "type": "uint256"
+        "type": "uint48"
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint48",
         "name": "lockedUntil",
-        "type": "uint256"
+        "type": "uint48"
       }
     ],
     "name": "VoteCasted",
@@ -100,9 +100,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint56",
         "name": "_voteId",
-        "type": "uint256"
+        "type": "uint56"
       }
     ],
     "name": "areTokensLocked",
@@ -152,29 +152,29 @@
             "type": "address"
           },
           {
-            "internalType": "uint256",
-            "name": "voteId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
+            "internalType": "uint152",
             "name": "amount",
-            "type": "uint256"
+            "type": "uint152"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint48",
             "name": "grantId",
-            "type": "uint256"
+            "type": "uint48"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint56",
+            "name": "voteId",
+            "type": "uint56"
+          },
+          {
+            "internalType": "uint48",
             "name": "lockedSince",
-            "type": "uint256"
+            "type": "uint48"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint48",
             "name": "lockedUntil",
-            "type": "uint256"
+            "type": "uint48"
           }
         ],
         "internalType": "struct GTCStaking.Vote[]",
@@ -201,19 +201,19 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint48",
         "name": "_grantId",
-        "type": "uint256"
+        "type": "uint48"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint152",
         "name": "_amount",
-        "type": "uint256"
+        "type": "uint152"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint48",
         "name": "_lockedUntil",
-        "type": "uint256"
+        "type": "uint48"
       }
     ],
     "name": "vote",
@@ -226,19 +226,19 @@
       {
         "components": [
           {
-            "internalType": "uint256",
+            "internalType": "uint48",
             "name": "grantId",
-            "type": "uint256"
+            "type": "uint48"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint152",
             "name": "amount",
-            "type": "uint256"
+            "type": "uint152"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint48",
             "name": "lockedUntil",
-            "type": "uint256"
+            "type": "uint48"
           }
         ],
         "internalType": "struct GTCStaking.BatchVoteParam[]",
@@ -267,9 +267,9 @@
     "name": "voterToVoteIds",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint56",
         "name": "",
-        "type": "uint256"
+        "type": "uint56"
       }
     ],
     "stateMutability": "view",
@@ -296,29 +296,29 @@
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "voteId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
+        "internalType": "uint152",
         "name": "amount",
-        "type": "uint256"
+        "type": "uint152"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint48",
         "name": "grantId",
-        "type": "uint256"
+        "type": "uint48"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint56",
+        "name": "voteId",
+        "type": "uint56"
+      },
+      {
+        "internalType": "uint48",
         "name": "lockedSince",
-        "type": "uint256"
+        "type": "uint48"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint48",
         "name": "lockedUntil",
-        "type": "uint256"
+        "type": "uint48"
       }
     ],
     "stateMutability": "view",
