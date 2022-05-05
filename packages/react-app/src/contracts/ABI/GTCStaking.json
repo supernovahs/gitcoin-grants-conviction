@@ -11,6 +11,31 @@
     "type": "constructor"
   },
   {
+    "inputs": [],
+    "name": "INVALID_AMOUNT",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "INVALID_LOCK_DURATION",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LOCK_DURATION_NOT_OVER",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NOT_OWNER",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TOKENS_ALREADY_RELAEASED",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -117,14 +142,19 @@
       {
         "components": [
           {
-            "internalType": "uint256",
-            "name": "voteId",
-            "type": "uint256"
+            "internalType": "bool",
+            "name": "released",
+            "type": "bool"
           },
           {
             "internalType": "address",
             "name": "voter",
             "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "voteId",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -145,11 +175,6 @@
             "internalType": "uint256",
             "name": "lockedUntil",
             "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "released",
-            "type": "bool"
           }
         ],
         "internalType": "struct GTCStaking.Vote[]",
@@ -261,14 +286,19 @@
     "name": "votes",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "voteId",
-        "type": "uint256"
+        "internalType": "bool",
+        "name": "released",
+        "type": "bool"
       },
       {
         "internalType": "address",
         "name": "voter",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "voteId",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -289,11 +319,6 @@
         "internalType": "uint256",
         "name": "lockedUntil",
         "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "released",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
