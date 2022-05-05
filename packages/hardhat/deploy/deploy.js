@@ -47,6 +47,14 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
   await tx3.wait();
 
+  const tx4 = await GTC.transfer(
+    "0x00de4b13153673bcae2616b67bf822500d325fc3", // owocki.eth
+    ethers.utils.parseEther("1000")
+  );
+  await tx4.wait();
+
+
+
   console.log("GTC address is",GTC.address)
 
   await deploy("GTCStaking", {
