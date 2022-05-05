@@ -60,7 +60,7 @@ export default function VoteItem({ item, tx, readContracts, writeContracts }) {
           <Countdown
             valueStyle={{ fontSize: "16px" }}
             title="Time remaining"
-            value={item.lockedUntil.toString() * 1000}
+            value={(item.lockedUntil.toString() * 1000) / 24}
             format={`D [days], HH:mm:ss`}
             onFinish={() => {
               setCanUnstake(true);
