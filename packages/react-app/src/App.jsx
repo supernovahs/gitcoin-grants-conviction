@@ -368,6 +368,7 @@ function App(props) {
             logoutOfWeb3Modal={logoutOfWeb3Modal}
             blockExplorer={blockExplorer}
             fontSize={16}
+            readContracts={readContracts}
           />
         </div>
         {yourLocalBalance.lte(ethers.BigNumber.from("0")) && (

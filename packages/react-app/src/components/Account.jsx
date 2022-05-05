@@ -56,6 +56,7 @@ export default function Account({
   blockExplorer,
   isContract,
   fontSize,
+  readContracts,
 }) {
   const { currentTheme } = useThemeSwitcher();
 
@@ -102,7 +103,13 @@ export default function Account({
               fontSize={fontSize}
             />
           )}
-          <Balance address={address} provider={localProvider} price={price} size={fontSize} />
+          <Balance
+            address={address}
+            provider={localProvider}
+            price={price}
+            size={fontSize}
+            readContracts={readContracts}
+          />
           <Wallet
             address={address}
             provider={localProvider}

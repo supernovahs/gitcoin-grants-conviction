@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useBalance } from "eth-hooks";
-
+import { useBalance, useContractReader } from "eth-hooks";
 const { utils } = require("ethers");
 
 /** 
@@ -34,7 +33,12 @@ export default function Balance(props) {
 
   const balance = useBalance(props.provider, props.address);
   let floatBalance = parseFloat("0.00");
+  let gtcFloatBalance = parseFloat("0.00");
   let usingBalance = balance;
+
+  const tokenBalance = useContractReader(props.readContracts, "GTC", "balanceOf", [props.address]);
+
+  let usingTokenBalance = tokenBalance;
 
   if (typeof props.balance !== "undefined") usingBalance = props.balance;
   if (typeof props.value !== "undefined") usingBalance = props.value;
@@ -45,7 +49,14 @@ export default function Balance(props) {
     floatBalance = parseFloat(etherBalance);
   }
 
+  if (usingTokenBalance) {
+    const etherBalance = utils.formatEther(usingTokenBalance);
+    parseFloat(etherBalance).toFixed(2);
+    gtcFloatBalance = parseFloat(etherBalance);
+  }
+
   let displayBalance = floatBalance.toFixed(4);
+  let displayTokenBalance = gtcFloatBalance.toFixed(4);
 
   const price = props.price || props.dollarMultiplier || 1;
 
@@ -61,11 +72,8 @@ export default function Balance(props) {
         padding: 8,
         cursor: "pointer",
       }}
-      onClick={() => {
-        setDollarMode(!dollarMode);
-      }}
     >
-      {displayBalance}
+      {displayTokenBalance} GTC
     </span>
   );
 }
