@@ -53,7 +53,8 @@ contract testing is DSTest{
         uint256 amount,
         uint256 grantId,
         uint256 lockedSince,
-        uint256 lockedUntil ) = gtcStaking.votes(0);
+        uint256 lockedUntil,
+        bool released ) = gtcStaking.votes(0);
 
         assertEq(voteId, 0);
         assertEq(voter, address(1));
@@ -61,6 +62,7 @@ contract testing is DSTest{
         assertEq(amount, 10 ether);
         assertEq(lockedSince, 50);
         assertEq(lockedUntil, 200);
+        assertTrue(!released);
     }
 
         function testVoteBatch() public {
@@ -79,7 +81,8 @@ contract testing is DSTest{
         uint256 amount,
         uint256 grantId,
         uint256 lockedSince,
-        uint256 lockedUntil) = gtcStaking.votes(0);
+        uint256 lockedUntil,
+        bool released ) = gtcStaking.votes(0);
 
         assertEq(voteId, 0);
         assertEq(voter, address(1));
@@ -87,6 +90,8 @@ contract testing is DSTest{
         assertEq(amount, 10 ether);
         assertEq(lockedSince, 50);
         assertEq(lockedUntil, 200);
+        assertTrue(!released);
+    
     }
 
     function testReleaseTokens() public {
@@ -105,7 +110,8 @@ contract testing is DSTest{
         /*uint256 amount*/,
         /*uint256 grantId*/,
         /*uint256 lockedSince*/,
-        uint256 lockedUntil) = gtcStaking.votes(1);
+        uint256 lockedUntil,
+        /*bool released*/) = gtcStaking.votes(1);
 
         assertEq(lockedUntil, 300);
 

@@ -54,8 +54,8 @@
     "watch-theme": "yarn workspace @scaffold-eth/react-app watch",
     "postinstall": "husky install",
     "fetch-grants": "yarn workspace @scaffold-eth/react-app fetch-grants",
-    "forge-test": "forge test",
-    "forge-test-v": "forge test -vvvvv",
+    "forge-test": "forge test --gas-report",
+    "forge-test-v": "forge test -vvvvv --gas-report",
     "json-server": "yarn workspace @scaffold-eth/react-app json-server --port 3001 public/grants-owocki.json"
   },
   "workspaces": {
