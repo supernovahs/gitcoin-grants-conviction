@@ -7,8 +7,6 @@ import "./GTC.sol";
 // --------------------------- custom errors ------------------------- //
 //*********************************************************************//
 error INVALID_AMOUNT();
-error INVALID_LOCK_DURATION();
-error LOCK_DURATION_NOT_OVER();
 error NOT_OWNER();
 error TOKENS_ALREADY_RELAEASED();
 
@@ -21,15 +19,13 @@ contract GTCStaking {
         uint56 voteId,
         address voter,
         uint152 amount,
-        uint48 grantId,
-        uint48 lockedSince,
-        uint48 lockedUntil
+        uint48 grantId
     );
 
     event TokensReleased(address voter, uint152 amount);
 
     /// @notice gtc token contract instance.
-    GTC gtcToken;
+    GTC immutable gtcToken;
 
     /// @notice vote struct array.
     Vote[] public votes;
@@ -44,15 +40,12 @@ contract GTCStaking {
         uint152 amount;
         uint48 grantId;
         uint56 voteId;
-        uint48 lockedSince;
-        uint48 lockedUntil;
     }
 
     /// @notice BatchVote struct.
     struct BatchVoteParam {
         uint48 grantId;
         uint152 amount;
-        uint48 lockedUntil;
     }
 
     /**
@@ -63,7 +56,7 @@ contract GTCStaking {
         gtcToken = GTC(tokenAddress);
     }
 
-   /**
+    /**
     @dev Get Current Timestamp.
     @return current timestamp.
     */
@@ -71,17 +64,15 @@ contract GTCStaking {
         return block.timestamp;
     }
 
-   /**
+    /**
     @dev Checks if tokens are locked or not.
     @return status of the tokens.
     */
     function areTokensLocked(uint56 _voteId) external view returns (bool) {
-        return
-            votes[_voteId].lockedUntil > block.timestamp &&
-            !votes[_voteId].released;
+        return !votes[_voteId].released;
     }
 
-   /**
+    /**
     @dev Vote Info for a user.
     @param _voter address of voter
     @return Vote struct for the particular user id.
@@ -99,22 +90,14 @@ contract GTCStaking {
         return votesForAddress;
     }
 
-   /**
+    /**
     @dev Stake and get Voting rights.
     @param _grantId gitcoin grant id.
     @param _amount amount of tokens to lock.
-    @param _lockedUntil lock duration.
     */
-    function vote(
-        uint48 _grantId,
-        uint152 _amount,
-        uint48 _lockedUntil
-    ) public {
+    function _vote(uint48 _grantId, uint152 _amount) internal {
         if (_amount == 0) {
             revert INVALID_AMOUNT();
-        }
-        if (_lockedUntil <= block.timestamp) {
-            revert INVALID_LOCK_DURATION();
         }
 
         gtcToken.transferFrom(msg.sender, address(this), _amount);
@@ -127,51 +110,41 @@ contract GTCStaking {
                 voter: msg.sender,
                 amount: _amount,
                 grantId: _grantId,
-                lockedSince: uint48(block.timestamp),
-                lockedUntil: _lockedUntil,
                 released: false
             })
         );
 
         voterToVoteIds[msg.sender].push(voteId);
 
-        emit VoteCasted(
-            voteId,
-            msg.sender,
-            _amount,
-            _grantId,
-            uint48(block.timestamp),
-            _lockedUntil
-        );
+        emit VoteCasted(voteId, msg.sender, _amount, _grantId);
     }
 
-   /**
+    /**
     @dev Stake and get Voting rights in barch.
     @param _batch array of struct to stake into multiple grants.
     */
-    function voteBatch(BatchVoteParam[] memory _batch) external {
+    function vote(BatchVoteParam[] memory _batch) external {
         for (uint256 i = 0; i < _batch.length; i++) {
-            vote(_batch[i].grantId, _batch[i].amount, _batch[i].lockedUntil);
+            _vote(_batch[i].grantId, _batch[i].amount);
         }
     }
 
-   /**
+    /**
     @dev Release tokens and give up votes.
-    @param _voteId vote id.
+    @param _voteIds array of vote ids in order to release tokens.
     */
-    function releaseTokens(uint256 _voteId) external {
-        if (votes[_voteId].voter != msg.sender) {
+    function releaseTokens(uint256[] memory _voteIds) external {
+        for (uint256 i = 0; i < _voteIds.length; i++) {
+        if (votes[_voteIds[i]].voter != msg.sender) {
             revert NOT_OWNER();
         }
-        if (votes[_voteId].lockedUntil > block.timestamp) {
-            revert LOCK_DURATION_NOT_OVER();
-        }
-        if (votes[_voteId].released != false) {
+        if (votes[_voteIds[i]].released != false) {
             revert TOKENS_ALREADY_RELAEASED();
         }
-        votes[_voteId].released = true;
-        gtcToken.transfer(msg.sender, votes[_voteId].amount);
+        votes[_voteIds[i]].released = true;
+        gtcToken.transfer(msg.sender, votes[_voteIds[i]].amount);
 
-        emit TokensReleased(msg.sender, votes[_voteId].amount);
+        emit TokensReleased(msg.sender, votes[_voteIds[i]].amount);
+        }
     }
 }

@@ -17,16 +17,6 @@
   },
   {
     "inputs": [],
-    "name": "INVALID_LOCK_DURATION",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "LOCK_DURATION_NOT_OVER",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NOT_OWNER",
     "type": "error"
   },
@@ -79,18 +69,6 @@
         "indexed": false,
         "internalType": "uint48",
         "name": "grantId",
-        "type": "uint48"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint48",
-        "name": "lockedSince",
-        "type": "uint48"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint48",
-        "name": "lockedUntil",
         "type": "uint48"
       }
     ],
@@ -165,16 +143,6 @@
             "internalType": "uint56",
             "name": "voteId",
             "type": "uint56"
-          },
-          {
-            "internalType": "uint48",
-            "name": "lockedSince",
-            "type": "uint48"
-          },
-          {
-            "internalType": "uint48",
-            "name": "lockedUntil",
-            "type": "uint48"
           }
         ],
         "internalType": "struct GTCStaking.Vote[]",
@@ -188,35 +156,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_voteId",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "_voteIds",
+        "type": "uint256[]"
       }
     ],
     "name": "releaseTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint48",
-        "name": "_grantId",
-        "type": "uint48"
-      },
-      {
-        "internalType": "uint152",
-        "name": "_amount",
-        "type": "uint152"
-      },
-      {
-        "internalType": "uint48",
-        "name": "_lockedUntil",
-        "type": "uint48"
-      }
-    ],
-    "name": "vote",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -234,11 +179,6 @@
             "internalType": "uint152",
             "name": "amount",
             "type": "uint152"
-          },
-          {
-            "internalType": "uint48",
-            "name": "lockedUntil",
-            "type": "uint48"
           }
         ],
         "internalType": "struct GTCStaking.BatchVoteParam[]",
@@ -246,7 +186,7 @@
         "type": "tuple[]"
       }
     ],
-    "name": "voteBatch",
+    "name": "vote",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -309,16 +249,6 @@
         "internalType": "uint56",
         "name": "voteId",
         "type": "uint56"
-      },
-      {
-        "internalType": "uint48",
-        "name": "lockedSince",
-        "type": "uint48"
-      },
-      {
-        "internalType": "uint48",
-        "name": "lockedUntil",
-        "type": "uint48"
       }
     ],
     "stateMutability": "view",
