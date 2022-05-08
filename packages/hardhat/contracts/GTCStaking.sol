@@ -25,7 +25,7 @@ contract GTCStaking {
     event TokensReleased(address voter, uint152 amount);
 
     /// @notice gtc token contract instance.
-    GTC gtcToken;
+    GTC immutable gtcToken;
 
     /// @notice vote struct array.
     Vote[] public votes;
