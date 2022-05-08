@@ -14,8 +14,8 @@ import "hardhat/console.sol";
 /// @dev This is a test contract that uses the `Foundry` library.   It is a
 /// @dev DSTest contract is a helper contract that provides cheatcodes for testing purposes.
 /// @dev To test, install Foundry and run forge test -vvvvv in the root directory.
-contract testing is DSTest{
-    Hevm vm = Hevm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+contract testing is DSTest {
+    Hevm evm = Hevm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
 
     /// @dev Declaring the imported contracts as a variable
     GTCStaking gtcStaking;
@@ -23,9 +23,8 @@ contract testing is DSTest{
 
     /// @notice setUp function in Foundry is like a beforeEach function used in Hardhat!
     /// @dev This function is called before each test.
-
     function setUp() public {
-        vm.warp(50);
+        evm.warp(50);
         /// @notice: Instatntiating the imported contract
         gtcToken = new GTC();
         gtcStaking = new GTCStaking(address(gtcToken));
@@ -35,7 +34,7 @@ contract testing is DSTest{
     /// @dev Testing the currentTimestamp function.
     /// @dev To view indepth details of the test traces. Use forge test -vvvvv
     function testCurrentTimestamp() public {
-        vm.warp(100);
+        evm.warp(100);
         /// @notice: Console log to view the output
         console.log(gtcStaking.currentTimestamp());
 
@@ -43,81 +42,81 @@ contract testing is DSTest{
         assertEq(gtcStaking.currentTimestamp(), 100);
     }
 
+    /// @dev Testing the vote function.
+    /// @dev To view indepth details of the test traces. Use forge test -vvvvv
     function testVote() public {
-        vm.startPrank(address(1));
-        gtcToken.approve(address(gtcStaking), 10 ether);
-        gtcStaking.vote(1, 10 ether, 200);
-        
-        (uint256 voteId,
-        address voter,
-        uint256 amount,
-        uint256 grantId,
-        uint256 lockedSince,
-        uint256 lockedUntil ) = gtcStaking.votes(0);
+        evm.startPrank(address(1));
+        gtcToken.approve(address(gtcStaking), 40 ether);
 
+        // define the vote params
+        GTCStaking.BatchVoteParam[] memory params = new GTCStaking.BatchVoteParam[](3);
+        params[0] = GTCStaking.BatchVoteParam(1, 10 ether);
+        params[1] = GTCStaking.BatchVoteParam(2, 15 ether);
+        params[2] = GTCStaking.BatchVoteParam(3, 15 ether);
+
+        gtcStaking.vote(params);
+        
+        // assertion checks
+        (
+            bool released,
+            address voter,
+            uint256 amount,
+            uint256 grantId,
+            uint256 voteId
+        ) = gtcStaking.votes(0);
+
+        assert(!released);
         assertEq(voteId, 0);
         assertEq(voter, address(1));
         assertEq(grantId, 1);
         assertEq(amount, 10 ether);
-        assertEq(lockedSince, 50);
-        assertEq(lockedUntil, 200);
-    }
 
-        function testVoteBatch() public {
-        vm.startPrank(address(1));
-        gtcToken.approve(address(gtcStaking), 30 ether);
+        (released, voter, amount, grantId, voteId) = gtcStaking.votes(1);
 
-        GTCStaking.BatchVoteParam[] memory params = new GTCStaking.BatchVoteParam[](2);
-
-        params[0] = GTCStaking.BatchVoteParam(1, 10 ether, 200);
-        params[1] = GTCStaking.BatchVoteParam(1, 15 ether, 300);
-
-        gtcStaking.voteBatch(params);
-        
-        (uint256 voteId,
-        address voter,
-        uint256 amount,
-        uint256 grantId,
-        uint256 lockedSince,
-        uint256 lockedUntil) = gtcStaking.votes(0);
-
-        assertEq(voteId, 0);
+        assert(!released);
+        assertEq(voteId, 1);
         assertEq(voter, address(1));
-        assertEq(grantId, 1);
-        assertEq(amount, 10 ether);
-        assertEq(lockedSince, 50);
-        assertEq(lockedUntil, 200);
+        assertEq(grantId, 2);
+        assertEq(amount, 15 ether);
     }
 
+    /// @dev Testing the releaseTokens function.
+    /// @dev To view indepth details of the test traces. Use forge test -vvvvv
     function testReleaseTokens() public {
-        vm.startPrank(address(1));
+        evm.startPrank(address(1));
         gtcToken.approve(address(gtcStaking), 30 ether);
 
+        // define the vote params
         GTCStaking.BatchVoteParam[] memory params = new GTCStaking.BatchVoteParam[](2);
+        params[0] = GTCStaking.BatchVoteParam(1, 10 ether);
+        params[1] = GTCStaking.BatchVoteParam(2, 15 ether);
 
-        params[0] = GTCStaking.BatchVoteParam(1, 10 ether, 200);
-        params[1] = GTCStaking.BatchVoteParam(1, 15 ether, 300);
+        gtcStaking.vote(params);
+
+        uint256[] memory voteIds = new uint256[](2);
+        voteIds[0] = 0;
+        voteIds[1] = 1;
+
+        evm.stopPrank();
+
+        // using non-owner as msg.sender
+        evm.startPrank(address(2));
+        evm.expectRevert(abi.encodeWithSignature('NOT_OWNER()'));
+        gtcStaking.releaseTokens(voteIds);
         
-        gtcStaking.voteBatch(params);
-        
-        (/*uint256 voteId*/,
-        /*address voter*/,
-        /*uint256 amount*/,
-        /*uint256 grantId*/,
-        /*uint256 lockedSince*/,
-        uint256 lockedUntil) = gtcStaking.votes(1);
-
-        assertEq(lockedUntil, 300);
-
-        vm.expectRevert("You can't release your tokens yet");
-        gtcStaking.releaseTokens(1);
-
-        vm.warp(310);
+        // updating msg.sender to correct address
+        evm.stopPrank();
+        evm.startPrank(address(1));
 
         uint256 balance = gtcToken.balanceOf(address(1));
 
-        gtcStaking.releaseTokens(1);
+        gtcStaking.releaseTokens(voteIds);
 
-        assertEq(balance + 15 ether, gtcToken.balanceOf(address(1)));
+        // balance checks
+        assertEq(balance + 25 ether, gtcToken.balanceOf(address(1)));
+        
+        // calling releaseTokens again reverts
+        evm.expectRevert(abi.encodeWithSignature('TOKENS_ALREADY_RELAEASED()'));
+        gtcStaking.releaseTokens(voteIds);
     }
 }
