@@ -17,22 +17,64 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  await deploy("YourContract", {
+  const tokenDeployment = await deploy("GTC", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    // args: [ "Hello", ethers.utils.parseEther("1.5") ],
+    /*args: [ "0x18fFE4dADcCe63A074Ef9cfe327cAb9AD4Ad9f76" ],*/
     log: true,
-    waitConfirmations: 5,
   });
 
   // Getting a previously deployed contract
-  const YourContract = await ethers.getContract("YourContract", deployer);
-  /*  await YourContract.setPurpose("Hello");
-  
-    To take ownership of yourContract using the ownable library uncomment next line and add the 
-    address you want to be the owner. 
-    // await yourContract.transferOwnership(YOUR_ADDRESS_HERE);
+  const GTC = await ethers.getContract("cvGTC", deployer);
 
+  console.log("Sending GTC...");
+
+  const tx1 = await GTC.transfer(
+    "0x523d007855B3543797E0d3D462CB44B601274819", // 0xdarni.eth
+    ethers.utils.parseEther("1000")
+  );
+  await tx1.wait();
+
+  const tx2 = await GTC.transfer(
+    "0x3045313ad5d09035C69dA75E59a163c754D1b442", // second address
+    ethers.utils.parseEther("10")
+  );
+  await tx2.wait();
+
+  const tx3 = await GTC.transfer(
+    "0x34aA3F359A9D614239015126635CE7732c18fDF3", // atg.eth
+    ethers.utils.parseEther("1000")
+  );
+  await tx3.wait();
+
+  const tx4 = await GTC.transfer(
+    "0x00de4b13153673bcae2616b67bf822500d325fc3", // owocki.eth
+    ethers.utils.parseEther("1000")
+  );
+  await tx4.wait();
+
+  console.log("GTC address is", GTC.address);
+
+  await deploy("BGReverseBridge", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: [GTC.address],
+    log: true,
+  });
+
+  await deploy("ConvictionVoting", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: [GTC.address],
+    log: true,
+  });
+
+  // Getting a previously deployed contract
+  // const YourContract = await ethers.getContract("YourContract", deployer);
+  /*
+    To take ownership of yourContract using the ownable library uncomment next line and add the
+    address you want to be the owner.
+    // await yourContract.transferOwnership(YOUR_ADDRESS_HERE);
     //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
   */
 
@@ -69,11 +111,11 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   //     await run("verify:verify", {
   //       address: YourContract.address,
   //       contract: "contracts/YourContract.sol:YourContract",
-  //       constructorArguments: [],
+  //       contractArguments: [],
   //     });
   //   }
   // } catch (error) {
   //   console.error(error);
   // }
 };
-module.exports.tags = ["YourContract"];
+module.exports.tags = ["GTCStaking"];

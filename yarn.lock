@@ -1349,20 +1349,20 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eth-optimism/contracts@0.5.16":
-  version "0.5.16"
-  resolved "https://registry.yarnpkg.com/@eth-optimism/contracts/-/contracts-0.5.16.tgz#eb76a8dcb749d92aef1c12e27a74a192f5780215"
-  integrity sha512-4nufUjQpCyCKCnaPQ9HXEkgnDEOsd2+tat7pCkU0syfLbhrHuPwLXWHa4B0rBN/4ZDbo7fy2P9HvwiKzX2khSw==
+"@eth-optimism/contracts@0.5.23", "@eth-optimism/contracts@^0.5.23":
+  version "0.5.23"
+  resolved "https://registry.yarnpkg.com/@eth-optimism/contracts/-/contracts-0.5.23.tgz#630243486a583bd12f9116c871df8453b1c979fc"
+  integrity sha512-XSeRhYRyWGebItoBr0pXJNNhbzCerJJDqG9V9jNPuTJ5H18sAGm8jmrdIp4gj3bZnV41qOa4qd7BonHLlgzw0w==
   dependencies:
-    "@eth-optimism/core-utils" "0.8.1"
+    "@eth-optimism/core-utils" "0.8.4"
     "@ethersproject/abstract-provider" "^5.5.1"
     "@ethersproject/abstract-signer" "^5.5.0"
     "@ethersproject/hardware-wallets" "^5.5.0"
 
-"@eth-optimism/core-utils@0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@eth-optimism/core-utils/-/core-utils-0.8.1.tgz#ee7d8815f9ddb67ca3e2f3ec1d8515a46af5caf6"
-  integrity sha512-GJJvw9cBekvR1xH/f2jpgp6MnbWlMBaVm1h3BA0sEzmlaFufTG4ybGrHkL3nQT0Vqtjs3LYjaExkVmsUzpb7xg==
+"@eth-optimism/core-utils@0.8.4":
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/@eth-optimism/core-utils/-/core-utils-0.8.4.tgz#617883bf85c438e40e0e09de427582390359dff9"
+  integrity sha512-HayyAM8rawvRY8wg/Iy/5O4Gn6VPYxlgaQ1vLcbwDDMvXOCbIjONbOBqi+v7LKVPuvfL6xY+3aMibm5tWtrn/g==
   dependencies:
     "@ethersproject/abstract-provider" "^5.5.1"
     "@ethersproject/bytes" "^5.5.0"
@@ -1373,13 +1373,13 @@
     chai "^4.3.4"
     ethers "^5.5.4"
 
-"@eth-optimism/sdk@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@eth-optimism/sdk/-/sdk-1.0.0.tgz#504e25fb1659c29e19a730310608c3b9337b06c1"
-  integrity sha512-Uto2SKXxx8Bv2iKlKp54quJD1mCP3G7/HvlWHzB6JkkvQNAXcRmyH4vUlDAx8DIX/1brTg1qRoFAwz8wDd0OFA==
+"@eth-optimism/sdk@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@eth-optimism/sdk/-/sdk-1.1.3.tgz#072a92a6e3bbabef7d38766fd280350a25d6f616"
+  integrity sha512-lAPfiR+QssMBBvFxJtaGosSK9CzuN3duVn0Swy/IXdl97EZg56eJY4UDFck8AfSXwJeTmKdGMxwLEM/zwyOP1A==
   dependencies:
-    "@eth-optimism/contracts" "0.5.16"
-    "@eth-optimism/core-utils" "0.8.1"
+    "@eth-optimism/contracts" "0.5.23"
+    "@eth-optimism/core-utils" "0.8.4"
     lodash "^4.17.21"
     merkletreejs "^0.2.27"
     rlp "^2.2.7"
