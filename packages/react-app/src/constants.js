@@ -13,7 +13,7 @@ export const NETWORKS = {
   localhost: {
     name: "localhost",
     color: "#666666",
-    chainId: 31337,
+    // chainId: 1337,
     blockExplorer: "",
     rpcUrl: "http://" + (global.window ? window.location.hostname : "localhost") + ":8545",
   },
@@ -95,7 +95,7 @@ export const NETWORKS = {
   localOptimism: {
     name: "localOptimism",
     color: "#f01a37",
-    chainId: 420,
+    chainId: 17,
     blockExplorer: "",
     rpcUrl: "http://" + (global.window ? window.location.hostname : "localhost") + ":8545",
     gasPrice: 0,
@@ -177,7 +177,7 @@ export const NETWORKS = {
     color: "#53CBC9",
     chainId: 1284,
     blockExplorer: "https://moonscan.io",
-    rpcUrl: "https://rpc.api.moonbeam.network", 
+    rpcUrl: "https://rpc.api.moonbeam.network",
   },
   moonriver: {
     name: "moonriver",
@@ -200,7 +200,7 @@ export const NETWORKS = {
     chainId: 1281,
     blockExplorer: "https://moonbeam-explorer.netlify.app/",
     rpcUrl: "http://127.0.0.1:9933",
-  }
+  },
 };
 
 export const NETWORK = chainId => {

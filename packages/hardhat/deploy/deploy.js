@@ -12,12 +12,17 @@ const localChainId = "31337";
 //     }, ms)
 //   );
 
+const hre = require("hardhat");
+
 module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
-  const { deploy } = deployments;
+  // return
+  console.log("🔴 DEPLOY L1");
+  const { deploy: deployL1 } = deployments;
+  const { deploy: deployL2 } = hre.companionNetworks["l2"].deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  const tokenDeployment = await deploy("GTC", {
+  await deployL1("GTC", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
     /*args: [ "0x18fFE4dADcCe63A074Ef9cfe327cAb9AD4Ad9f76" ],*/
@@ -25,7 +30,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   });
 
   // Getting a previously deployed contract
-  const GTC = await ethers.getContract("cvGTC", deployer);
+  const GTC = await ethers.getContract("GTC", deployer);
 
   console.log("Sending GTC...");
 
@@ -55,17 +60,33 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   console.log("GTC address is", GTC.address);
 
-  await deploy("BGReverseBridge", {
+  await deployL1("BGBridge", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
     args: [GTC.address],
     log: true,
   });
 
-  await deploy("ConvictionVoting", {
+  console.log("🔴 DEPLOY L2");
+
+  await deployL2("cvGTC", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [GTC.address],
+    /*args: [ "0x18fFE4dADcCe63A074Ef9cfe327cAb9AD4Ad9f76" ],*/
+    log: true,
+  });
+
+  // Getting a previously deployed contract
+  const cvGTC = await await hre.companionNetworks["l2"].deployments.get(
+    "cvGTC"
+  );
+
+  console.log("cvGTC address is", cvGTC.address);
+
+  await deployL2("BGReverseBridge", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: [cvGTC.address],
     log: true,
   });
 

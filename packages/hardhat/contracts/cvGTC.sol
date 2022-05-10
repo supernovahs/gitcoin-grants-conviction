@@ -5,17 +5,21 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
-// For cross domain messages' origin
+import "./CrossChain.sol";
+
 import { ICrossDomainMessenger } from 
     "@eth-optimism/contracts/libraries/bridge/ICrossDomainMessenger.sol";
 
-contract cvGTC is ERC20, Ownable {
+contract cvGTC is ERC20, Ownable, CrossChain {
 
   /// @notice address of the BG Bridge token contract instance on L1
-  address bgBridge;
+  address public bgBridge;
+
+  /// @notice address of the BG Reverse Bridge token contract instance on L2
+  address public bgReverseBridge;
 
   /// @notice address of the Conviction Voting contract on L2
-  address cvContract;
+  address public cvContract;
 
   constructor() ERC20("Conviction Voting Gitcoin","cvGTC") {
   }
@@ -25,13 +29,27 @@ contract cvGTC is ERC20, Ownable {
     _mint(_to, _amount);
   }
 
+  function burn(address _account, uint256 _amount) external onlyReverseBridge {
+    require(_amount > 0, "Amount must be greater than 0");
+    _burn(_account, _amount);
+  }
+
   /**
+  @dev Sets the address of the L2 bridge
+  @param _bgReverseBridge The address of the bridge contract on L2
+  */
+  function setBGReverseBridge(address _bgReverseBridge) external onlyOwner {
+    bgReverseBridge = _bgReverseBridge;
+  }
+
+   /**
   @dev Sets the address of the L1 bridge
   @param _bgBridge The address of the bridge contract on L1
   */
   function setBGBridge(address _bgBridge) external onlyOwner {
     bgBridge = _bgBridge;
   }
+
 
   /**
   @dev Sets the address of the L1 bridge
@@ -41,7 +59,7 @@ contract cvGTC is ERC20, Ownable {
     cvContract = _cvContract;
   }
 
-   /**
+  /**
   * @dev See {IERC20-transfer}.
   */
   function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
@@ -55,29 +73,9 @@ contract cvGTC is ERC20, Ownable {
     _;
   }
 
-  // Get the cross domain origin, if any
-  function getXorig() private view returns (address) {
-    // Get the cross domain messenger's address each time.
-    // This is less resource intensive than writing to storage.
-    address cdmAddr = address(0);    
-
-    if (block.chainid == 1)
-      cdmAddr = 0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1;
-
-    // Kovan
-    if (block.chainid == 42)
-      cdmAddr = 0x4361d0F75A0186C05f971c566dC6bEa5957483fD;
-
-    // L2
-    if (block.chainid == 10 || block.chainid == 69)
-      cdmAddr = 0x4200000000000000000000000000000000000007;
-
-    // If this isn't a cross domain message
-    if (msg.sender != cdmAddr)
-      return address(0);
-
-    // If it is a cross domain message, find out where it is from
-    return ICrossDomainMessenger(cdmAddr).xDomainMessageSender();
-  }    // getXorig()
+  modifier onlyReverseBridge() {
+    require(getXorig() == bgReverseBridge, "Only the bridge can call this function");
+    _;
+  }
 
 }

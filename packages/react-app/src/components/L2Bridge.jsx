@@ -25,8 +25,8 @@ export default function L2ArbitrumBridge({ address, userSigner }) {
   const [L2EthBalance, setL2EthBalance] = useState("...");
   const [L1Provider, setL1Provider] = useState("");
   const [L2Provider, setL2Provider] = useState("");
-  const [rollup, setRollup] = useState("arbitrum");
-  const [environment] = useState("test");
+  const [rollup, setRollup] = useState("optimism");
+  const [environment] = useState("local");
 
   const rollupConfig = {
     arbitrum: {

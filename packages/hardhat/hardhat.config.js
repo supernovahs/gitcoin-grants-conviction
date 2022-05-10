@@ -174,7 +174,7 @@ module.exports = {
     localOptimism: {
       url: "http://localhost:8545",
       accounts: {
-        mnemonic: mnemonic(),
+        mnemonic: "test test test test test test test test test test test junk",
       },
       companionNetworks: {
         l1: "localOptimismL1",
@@ -184,7 +184,7 @@ module.exports = {
       url: "http://localhost:9545",
       gasPrice: 0,
       accounts: {
-        mnemonic: mnemonic(),
+        mnemonic: "test test test test test test test test test test test junk",
       },
       companionNetworks: {
         l2: "localOptimism",
@@ -231,33 +231,33 @@ module.exports = {
       },
     },
     moonbeam: {
-      url: 'https://rpc.api.moonbeam.network',
+      url: "https://rpc.api.moonbeam.network",
       chainId: 1284,
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     moonriver: {
-      url: 'https://rpc.api.moonriver.moonbeam.network',
+      url: "https://rpc.api.moonriver.moonbeam.network",
       chainId: 1285,
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     moonbaseAlpha: {
-      url: 'https://rpc.api.moonbase.moonbeam.network',
+      url: "https://rpc.api.moonbase.moonbeam.network",
       chainId: 1287,
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     moonbeamDevNode: {
-      url: 'http://127.0.0.1:9933',
+      url: "http://127.0.0.1:9933",
       chainId: 1281,
       accounts: {
         mnemonic: mnemonic(),
       },
-    }
+    },
   },
   solidity: {
     compilers: [
