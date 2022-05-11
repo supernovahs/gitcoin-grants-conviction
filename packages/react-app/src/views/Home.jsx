@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 import InfiniteScroll from "react-infinite-scroller";
 import { useDebounce } from "use-debounce";
 import { List } from "antd";
+import { UnlockOutlined } from "@ant-design/icons";
 
 import VoteItem from "../components/VoteItem";
 
@@ -22,6 +23,8 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
   const [filter, setFilter] = useState("");
   const [debouncedFilter] = useDebounce(filter, 500);
   const [totalGrants, setTotalGrants] = useState(0);
+
+  const [unstakeCart, setUnstakeCart] = useState([]);
 
   const limit = 50;
 
@@ -91,6 +94,37 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
 
   const hasMoreItems = nextStart !== -1;
 
+  const handleUnstake = () => {
+    console.log("tx address", readContracts.GTCStaking.address);
+
+    console.log("Releasing tokens", unstakeCart);
+
+    tx(writeContracts.GTCStaking.releaseTokens(unstakeCart), update => {
+      console.log("📡 Transaction Update:", update);
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        console.log(" 🍾 Transaction " + update.hash + " finished!");
+        console.log(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+      }
+    });
+  };
+
+  const unstakeCheckCallBack = (voteId, checked) => {
+    if (checked) {
+      setUnstakeCart([...unstakeCart, voteId]);
+    } else {
+      const uCart = unstakeCart;
+      setUnstakeCart(uCart.filter(id => !id.eq(voteId)));
+    }
+  };
+
   return (
     <>
       {votes && votes.filter(_item => !_item.released).length > 0 && (
@@ -107,10 +141,18 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
           <List
             itemLayout="horizontal"
             dataSource={votes.filter(_item => !_item.released)}
-            renderItem={item => (
-              <VoteItem item={item} tx={tx} readContracts={readContracts} writeContracts={writeContracts} />
-            )}
+            renderItem={item => <VoteItem item={item} onCheckCallback={unstakeCheckCallBack} />}
           />
+          <Button
+            onClick={() => {
+              handleUnstake();
+            }}
+            type="primary"
+            shape="round"
+            icon={<UnlockOutlined key="unstake" />}
+          >
+            Unstake
+          </Button>
         </div>
       )}
 

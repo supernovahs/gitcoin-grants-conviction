@@ -3,13 +3,11 @@ import React, { useEffect, useState } from "react";
 import { DeleteOutlined, LockOutlined } from "@ant-design/icons";
 import { ethers } from "ethers";
 import { useHistory } from "react-router-dom";
-import { calculateConviction } from "../lib/ConvictionCalculator";
 
 const { Option } = Select;
 
 export default function Checkout({ tokenBalance, cart, setCart }) {
   const [cartTotal, setCartTotal] = useState(0);
-  const [convictionPerItem, setConvictionPerItem] = useState([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -30,10 +28,10 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
         margin: "auto",
         marginTop: 64,
         marginBottom: 32,
-        paddingBottom:128
+        paddingBottom: 128,
       }}
     >
-      <h3 style={{paddingBottom:64}}>The longer you stake your GTC the stronger your vote.</h3>
+      <h3 style={{ paddingBottom: 64 }}>The longer you stake your GTC the stronger your vote.</h3>
       <List
         itemLayout="horizontal"
         dataSource={cart}
@@ -53,30 +51,7 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
           >
             <Skeleton loading={false} title={false} active>
               <List.Item.Meta avatar={<Avatar src={item.img} />} title={item.title} />
-              <div style={{position:"relative"}}>
-              <div style={{position:"absolute",left:70,width:300,top:0,opacity:0.5}}>Conviction: {convictionPerItem[item.id]?.toFixed(2) ?? "0.00"}</div>
-              </div>
-              <div style={{paddingBottom:32}}>
-                <div style={{ float: "left" }}>
-                  <Select
-                    placeholder="Duration"
-                    onChange={value => {
-                      item.duration = value;
-                      setConvictionPerItem({
-                        ...convictionPerItem,
-                        [item.id]: calculateConviction(item.amount ?? 0, item.duration ?? 0),
-                      });
-                    }}
-                    value={item.duration}
-                  >
-                    <Option value="1">1 hour</Option>
-                    <Option value="24">1 day</Option>
-                    <Option value="72">3 days</Option>
-                    <Option value="168">7 days</Option>
-                    <Option value="336">14 days</Option>
-                    <Option value="720">30 days</Option>
-                  </Select>
-                </div>
+              <div style={{ paddingBottom: 32 }}>
                 <div style={{ float: "right", marginLeft: "16px" }}>
                   <Input
                     type={"number"}
@@ -86,10 +61,6 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                     onChange={e => {
                       item.amount = Number.isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value);
                       e.target.value = item.amount;
-                      setConvictionPerItem({
-                        ...convictionPerItem,
-                        [item.id]: calculateConviction(item.amount ?? 0, item.duration ?? 0),
-                      });
                       setCartTotal(
                         cart.reduce((runnintTotal, _item) => {
                           const value = _item.amount ? parseFloat(_item.amount) : 0;
@@ -100,7 +71,6 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                   />
                 </div>
               </div>
-
             </Skeleton>
           </List.Item>
         )}

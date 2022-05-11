@@ -31,9 +31,9 @@ import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Home, Confirm, Checkout, Success, Dashboard } from "./views";
+import { Home, Confirm, Checkout, Success } from "./views";
 import { useStaticJsonRPC, useLocalStorage } from "./hooks";
-import { ShoppingCartOutlined, DashboardOutlined, RollbackOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, RollbackOutlined } from "@ant-design/icons";
 
 require("dotenv").config();
 
@@ -336,9 +336,6 @@ function App(props) {
         </Route>
         <Route exact path="/success">
           <Success />
-        </Route>
-        <Route exact path="/dashboard">
-          <Dashboard votes={votes} tx={tx} writeContracts={writeContracts} readContracts={readContracts} />
         </Route>
       </Switch>
 

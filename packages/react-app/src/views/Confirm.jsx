@@ -36,11 +36,10 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
             return {
               grantId: item.id,
               amount: ethers.utils.parseEther(item.amount ? item.amount.toString() : "0"),
-              lockedUntil: Math.floor(Date.now() / 1000) + 60 * 60 * item.duration,
             };
           });
           console.log("🗳 Sending votes:", votes);
-          tx(writeContracts.GTCStaking.voteBatch(votes), update => {
+          tx(writeContracts.GTCStaking.vote(votes), update => {
             console.log("📡 Transaction Update:", update);
             if (update && (update.status === "confirmed" || update.status === 1)) {
               setCart([]);
@@ -82,11 +81,7 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
           <List.Item style={{ opacity: item.amount ? 1.0 : 0.2 }}>
             <Skeleton loading={false} title={false} active>
               <List.Item.Meta avatar={<Avatar src={item.img} />} title={item.title} />
-              <div>
-                Duration: {item.duration ? item.duration / 24 : "0"} days
-                <br />
-                Amount: {item.amount ?? 0} GTC
-              </div>
+              <div>Amount: {item.amount ?? 0} GTC</div>
             </Skeleton>
           </List.Item>
         )}
