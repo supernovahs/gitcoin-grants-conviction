@@ -1,9 +1,5 @@
 # 🏗 Scaffold-ETH
 
-# Rinkeby
-
-GTC: https://rinkeby.etherscan.io/address/0x961D0F9a9519434DF0F950c191bE5010bcCe177b#code
-GTCStaking: https://rinkeby.etherscan.io/address/0xdDFF14635EF59A765079d59cB7483474F0E7327B#code
 
 > everything you need to build on Ethereum! 🚀
 
