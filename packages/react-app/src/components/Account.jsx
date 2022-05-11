@@ -6,7 +6,7 @@ import Address from "./Address";
 import Balance from "./Balance";
 import Wallet from "./Wallet";
 
-/** 
+/**
   ~ What it does? ~
 
   Displays an Address, Balance, and Wallet as one Account component,
@@ -55,6 +55,8 @@ export default function Account({
   logoutOfWeb3Modal,
   blockExplorer,
   isContract,
+  fontSize,
+  readContracts,
 }) {
   const { currentTheme } = useThemeSwitcher();
 
@@ -76,13 +78,13 @@ export default function Account({
       modalButtons.push(
         <Button
           key="loginbutton"
-          style={{ verticalAlign: "top", marginLeft: 8, marginTop: 4 }}
+          style={{ verticalAlign: "top", marginRight: 38, marginTop: 14, transform: "scale(1.4)" }}
           shape="round"
           size="large"
-          /* type={minimized ? "default" : "primary"}     too many people just defaulting to MM and having a bad time */
+          type={minimized ? "default" : "primary"}
           onClick={loadWeb3Modal}
         >
-          connect
+          👛 Connect Wallet
         </Button>,
       );
     }
@@ -93,8 +95,21 @@ export default function Account({
     <span>
       {web3Modal && web3Modal.cachedProvider ? (
         <>
-          {address && <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />}
-          <Balance address={address} provider={localProvider} price={price} />
+          {address && (
+            <Address
+              address={address}
+              ensProvider={mainnetProvider}
+              blockExplorer={blockExplorer}
+              fontSize={fontSize}
+            />
+          )}
+          <Balance
+            address={address}
+            provider={localProvider}
+            price={price}
+            size={fontSize}
+            readContracts={readContracts}
+          />
           <Wallet
             address={address}
             provider={localProvider}
@@ -108,16 +123,23 @@ export default function Account({
         ""
       ) : isContract ? (
         <>
-          {address && <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />}
-          <Balance address={address} provider={localProvider} price={price} />
+          {address && (
+            <Address
+              address={address}
+              ensProvider={mainnetProvider}
+              blockExplorer={blockExplorer}
+              fontSize={fontSize}
+            />
+          )}
+          <Balance address={address} provider={localProvider} price={price} size={fontSize} />
         </>
       ) : (
         ""
       )}
       {useBurner && web3Modal && !web3Modal.cachedProvider ? (
         <>
-          <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} />
-          <Balance address={address} provider={localProvider} price={price} />
+          <Address address={address} ensProvider={mainnetProvider} blockExplorer={blockExplorer} fontSize={fontSize} />
+          <Balance address={address} provider={localProvider} price={price} size={fontSize} />
           <Wallet
             address={address}
             provider={localProvider}

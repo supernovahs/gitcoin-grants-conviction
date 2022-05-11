@@ -1,4 +1,4 @@
-import { Button, Col, Menu, Row } from "antd";
+import { Button, Col, Row } from "antd";
 import "antd/dist/antd.css";
 import {
   useBalance,
@@ -10,14 +10,16 @@ import {
 } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, Route, Switch, useLocation } from "react-router-dom";
+import { useHistory, Route, Switch, useLocation } from "react-router-dom";
 import "./App.css";
 import {
   Account,
   Contract,
+  Events,
   Faucet,
   GasGauge,
   Header,
+  Footer,
   Ramp,
   ThemeSwitch,
   NetworkDisplay,
@@ -29,8 +31,11 @@ import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Home, ExampleUI, Hints, Subgraph } from "./views";
-import { useStaticJsonRPC } from "./hooks";
+import { Home, Confirm, Checkout, Success } from "./views";
+import { useStaticJsonRPC, useLocalStorage } from "./hooks";
+import { ShoppingCartOutlined, RollbackOutlined } from "@ant-design/icons";
+
+require("dotenv").config();
 
 const { ethers } = require("ethers");
 /*
@@ -53,13 +58,14 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.rinkeby; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
 const NETWORKCHECK = true;
-const USE_BURNER_WALLET = true; // toggle burner wallet feature
+const USE_BURNER_WALLET = false; // toggle burner wallet feature
 const USE_NETWORK_SELECTOR = false;
+const HIDE_NETWORK = true;
 
 const web3Modal = Web3ModalSetup();
 
@@ -71,9 +77,12 @@ const providers = [
 ];
 
 function App(props) {
+  const history = useHistory();
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
   // reference './constants.js' for other networks
-  const networkOptions = [initialNetwork.name, "mainnet", "rinkeby"];
+  const networkOptions = [initialNetwork.name, "mainnet", "localhost"];
+
+  const [cart, setCart] = useLocalStorage("cart", []);
 
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
@@ -166,8 +175,11 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
-  // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  const tokenBalance = useContractReader(readContracts, "GTC", "balanceOf", [address]);
+
+  const currentTimestamp = useContractReader(readContracts, "GTCStaking", "currentTimestamp");
+
+  const votes = useContractReader(readContracts, "GTCStaking", "getVotesForAddress", [address]);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -196,10 +208,12 @@ function App(props) {
       console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
       console.log("💵 yourLocalBalance", yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : "...");
       console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
-      console.log("📝 readContracts", readContracts);
       console.log("🌍 DAI contract on mainnet:", mainnetContracts);
       console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
+      console.log("📝 readContracts", readContracts);
       console.log("🔐 writeContracts", writeContracts);
+      console.log("💶 tokenBalance", tokenBalance);
+      console.log("🗳 votes", votes);
     }
   }, [
     mainnetProvider,
@@ -255,32 +269,32 @@ function App(props) {
         targetNetwork={targetNetwork}
         logoutOfWeb3Modal={logoutOfWeb3Modal}
         USE_NETWORK_SELECTOR={USE_NETWORK_SELECTOR}
+        HIDE_NETWORK={HIDE_NETWORK}
       />
-      <Menu style={{ textAlign: "center", marginTop: 40 }} selectedKeys={[location.pathname]} mode="horizontal">
-        <Menu.Item key="/">
-          <Link to="/">App Home</Link>
-        </Menu.Item>
-        <Menu.Item key="/debug">
-          <Link to="/debug">Debug Contracts</Link>
-        </Menu.Item>
-        <Menu.Item key="/hints">
-          <Link to="/hints">Hints</Link>
-        </Menu.Item>
-        <Menu.Item key="/exampleui">
-          <Link to="/exampleui">ExampleUI</Link>
-        </Menu.Item>
-        <Menu.Item key="/mainnetdai">
-          <Link to="/mainnetdai">Mainnet DAI</Link>
-        </Menu.Item>
-        <Menu.Item key="/subgraph">
-          <Link to="/subgraph">Subgraph</Link>
-        </Menu.Item>
-      </Menu>
 
       <Switch>
         <Route exact path="/">
-          {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
-          <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
+          <Home
+            tokenBalance={tokenBalance}
+            cart={cart}
+            setCart={setCart}
+            votes={votes}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+          />
+        </Route>
+        <Route exact path="/checkout">
+          <Checkout tokenBalance={tokenBalance} cart={cart} setCart={setCart} />
+        </Route>
+        <Route exact path="/confirm">
+          <Confirm
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+            cart={cart}
+            setCart={setCart}
+          />
         </Route>
         <Route exact path="/debug">
           {/*
@@ -288,9 +302,30 @@ function App(props) {
                 this <Contract/> component will automatically parse your ABI
                 and give you a form to interact with it locally
             */}
-
+          <Events
+            address={address}
+            contracts={readContracts}
+            contractName="GTCStaking"
+            eventName="VoteCasted"
+            localProvider={localProvider}
+            mainnetProvider={mainnetProvider}
+            startBlock={1}
+            currentTimestamp={currentTimestamp}
+            tx={tx}
+            readContracts={readContracts}
+            writeContracts={writeContracts}
+          />
           <Contract
-            name="YourContract"
+            name="GTCStaking"
+            price={price}
+            signer={userSigner}
+            provider={localProvider}
+            address={address}
+            blockExplorer={blockExplorer}
+            contractConfig={contractConfig}
+          />
+          <Contract
+            name="GTC"
             price={price}
             signer={userSigner}
             provider={localProvider}
@@ -299,57 +334,8 @@ function App(props) {
             contractConfig={contractConfig}
           />
         </Route>
-        <Route path="/hints">
-          <Hints
-            address={address}
-            yourLocalBalance={yourLocalBalance}
-            mainnetProvider={mainnetProvider}
-            price={price}
-          />
-        </Route>
-        <Route path="/exampleui">
-          <ExampleUI
-            address={address}
-            userSigner={userSigner}
-            mainnetProvider={mainnetProvider}
-            localProvider={localProvider}
-            yourLocalBalance={yourLocalBalance}
-            price={price}
-            tx={tx}
-            writeContracts={writeContracts}
-            readContracts={readContracts}
-            purpose={purpose}
-          />
-        </Route>
-        <Route path="/mainnetdai">
-          <Contract
-            name="DAI"
-            customContract={mainnetContracts && mainnetContracts.contracts && mainnetContracts.contracts.DAI}
-            signer={userSigner}
-            provider={mainnetProvider}
-            address={address}
-            blockExplorer="https://etherscan.io/"
-            contractConfig={contractConfig}
-            chainId={1}
-          />
-          {/*
-            <Contract
-              name="UNI"
-              customContract={mainnetContracts && mainnetContracts.contracts && mainnetContracts.contracts.UNI}
-              signer={userSigner}
-              provider={mainnetProvider}
-              address={address}
-              blockExplorer="https://etherscan.io/"
-            />
-            */}
-        </Route>
-        <Route path="/subgraph">
-          <Subgraph
-            subgraphUri={props.subgraphUri}
-            tx={tx}
-            writeContracts={writeContracts}
-            mainnetProvider={mainnetProvider}
-          />
+        <Route exact path="/success">
+          <Success />
         </Route>
       </Switch>
 
@@ -378,6 +364,8 @@ function App(props) {
             loadWeb3Modal={loadWeb3Modal}
             logoutOfWeb3Modal={logoutOfWeb3Modal}
             blockExplorer={blockExplorer}
+            fontSize={16}
+            readContracts={readContracts}
           />
         </div>
         {yourLocalBalance.lte(ethers.BigNumber.from("0")) && (
@@ -386,7 +374,7 @@ function App(props) {
       </div>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
+      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10, display: "none" }}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
             <Ramp price={price} address={address} networks={NETWORKS} />
@@ -424,6 +412,42 @@ function App(props) {
           </Col>
         </Row>
       </div>
+
+      <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 50, padding: 10 }}>
+        {web3Modal.cachedProvider && location && location.pathname != "/checkout" && location.pathname != "/confirm" && (
+          <Button
+            style={{ marginRight: 70, transform: "scale(2)" }}
+            type="primary"
+            key="cart"
+            shape="round"
+            size="large"
+            icon={<ShoppingCartOutlined key="add-to-cart" />}
+            onClick={() => {
+              history.push("/checkout");
+            }}
+          >
+            Cart {cart.length > 0 && `(${cart.length})`}
+          </Button>
+        )}
+      </div>
+      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 50, padding: 10 }}>
+        {web3Modal.cachedProvider && location && location.pathname == "/checkout" && (
+          <Button
+            style={{ marginLeft: 70, transform: "scale(2)" }}
+            type="secondary"
+            key="cart"
+            shape="round"
+            size="large"
+            icon={<RollbackOutlined key="view-details" />}
+            onClick={() => {
+              history.push("/");
+            }}
+          >
+            Back
+          </Button>
+        )}
+      </div>
+      <Footer />
     </div>
   );
 }

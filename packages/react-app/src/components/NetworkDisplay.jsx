@@ -9,6 +9,7 @@ function NetworkDisplay({
   selectedChainId,
   targetNetwork,
   USE_NETWORK_SELECTOR,
+  HIDE_NETWORK,
   logoutOfWeb3Modal,
 }) {
   let networkDisplay = "";
@@ -89,8 +90,9 @@ function NetworkDisplay({
       );
     }
   } else {
-    networkDisplay = USE_NETWORK_SELECTOR ? null : (
-      <div style={{ zIndex: -1, position: "absolute", right: 154, top: 28, padding: 16, color: targetNetwork.color }}>
+    const hideNetworkLabel = HIDE_NETWORK || USE_NETWORK_SELECTOR;
+    networkDisplay = hideNetworkLabel ? null : (
+      <div style={{ zIndex: -1, position: "absolute", right: 381, top: 28, padding: 16, color: targetNetwork.color }}>
         {targetNetwork.name}
       </div>
     );
