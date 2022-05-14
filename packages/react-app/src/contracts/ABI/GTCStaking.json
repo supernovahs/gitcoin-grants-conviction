@@ -21,13 +21,14 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "TOKENS_ALREADY_RELAEASED",
-    "type": "error"
-  },
-  {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint56",
+        "name": "voteId",
+        "type": "uint56"
+      },
       {
         "indexed": false,
         "internalType": "address",

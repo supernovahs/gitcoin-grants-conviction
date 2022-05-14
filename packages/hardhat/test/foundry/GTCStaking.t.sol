@@ -1,20 +1,18 @@
 pragma solidity ^0.8.10;
 //SPDX-License-Identifier: MIT
 
-import "../../../contracts/GTCStaking.sol";
-import "../../../contracts/GTC.sol";
-import "../test.sol";
-import "../Hevm.sol";
+import "../../contracts/GTCStaking.sol";
+import "../../contracts/GTC.sol";
+import "forge-std/Test.sol";
+import "./Hevm.sol";
 
-import "hardhat/console.sol";
 
 /// @author: DanieleSalatti
 /// @Description: For more details see https://book.getfoundry.sh/
 
 /// @dev This is a test contract that uses the `Foundry` library.   It is a
-/// @dev DSTest contract is a helper contract that provides cheatcodes for testing purposes.
 /// @dev To test, install Foundry and run forge test -vvvvv in the root directory.
-contract testing is DSTest {
+contract testing is Test {
     Hevm evm = Hevm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
 
     /// @dev Declaring the imported contracts as a variable
@@ -115,8 +113,7 @@ contract testing is DSTest {
         // balance checks
         assertEq(balance + 25 ether, gtcToken.balanceOf(address(1)));
         
-        // calling releaseTokens again reverts
-        evm.expectRevert(abi.encodeWithSignature('TOKENS_ALREADY_RELAEASED()'));
+        // calling releaseTokens again does not revert
         gtcStaking.releaseTokens(voteIds);
     }
 }

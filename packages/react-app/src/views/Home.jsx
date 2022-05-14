@@ -5,10 +5,8 @@ import axios from "axios";
 import { ethers } from "ethers";
 import InfiniteScroll from "react-infinite-scroller";
 import { useDebounce } from "use-debounce";
-import { List } from "antd";
-import { UnlockOutlined } from "@ant-design/icons";
 
-import VoteItem from "../components/VoteItem";
+import { Dashboard } from "../components";
 
 import { BUIDL_GUIDL_API_ENDPOINT } from "../constants";
 
@@ -16,7 +14,18 @@ require("dotenv").config();
 
 const { Meta } = Card;
 
-export default function Home({ tokenBalance, cart, setCart, votes, tx, readContracts, writeContracts }) {
+export default function Home({
+  address,
+  tokenBalance,
+  cart,
+  setCart,
+  votes,
+  tx,
+  readContracts,
+  writeContracts,
+  localProvider,
+  mainnetProvider,
+}) {
   const [items, setItems] = useState([]);
   const [nextStart, setNextStart] = useState(0);
   const [fetching, setFetching] = useState(false);
@@ -24,7 +33,11 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
   const [debouncedFilter] = useDebounce(filter, 500);
   const [totalGrants, setTotalGrants] = useState(0);
 
-  const [unstakeCart, setUnstakeCart] = useState([]);
+  const generateNewSeed = () => {
+    return (Math.random() - 0.5) * 2;
+  };
+
+  const [seed, setSeed] = useState(generateNewSeed());
 
   const limit = 50;
 
@@ -42,14 +55,20 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
       return;
     }
     let start = nextStart;
+    let currentSeed = seed;
     if (reset) {
       start = 0;
       setNextStart(0);
       reset = false;
+      currentSeed = generateNewSeed();
+      setSeed(currentSeed);
     }
     setFetching(true);
 
-    let queryString = `?_start=${start}&_limit=${limit}`;
+    let queryString = `?_start=${start}&_limit=${limit}&seed=${currentSeed}`;
+
+    console.log("fetching grants", queryString);
+
     if (filter) {
       queryString += `&q=${filter}`;
     }
@@ -58,7 +77,8 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
       let res = await axiosClient.get(queryString);
       // Shuffle the results
       // We will need to repro this on the entire dataset on the backend
-      let data = res.data.sort(() => Math.random() - 0.5);
+      // let data = res.data.sort(() => Math.random() - 0.5);
+      let data = res.data;
 
       if (start === 0) {
         setItems(data);
@@ -94,40 +114,20 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
 
   const hasMoreItems = nextStart !== -1;
 
-  const handleUnstake = () => {
-    console.log("tx address", readContracts.GTCStaking.address);
-
-    console.log("Releasing tokens", unstakeCart);
-
-    tx(writeContracts.GTCStaking.releaseTokens(unstakeCart), update => {
-      console.log("📡 Transaction Update:", update);
-      if (update && (update.status === "confirmed" || update.status === 1)) {
-        console.log(" 🍾 Transaction " + update.hash + " finished!");
-        console.log(
-          " ⛽️ " +
-            update.gasUsed +
-            "/" +
-            (update.gasLimit || update.gas) +
-            " @ " +
-            parseFloat(update.gasPrice) / 1000000000 +
-            " gwei",
-        );
-      }
-    });
-  };
-
-  const unstakeCheckCallBack = (voteId, checked) => {
-    if (checked) {
-      setUnstakeCart([...unstakeCart, voteId]);
-    } else {
-      const uCart = unstakeCart;
-      setUnstakeCart(uCart.filter(id => !id.eq(voteId)));
-    }
-  };
-
   return (
     <>
-      {votes && votes.filter(_item => !_item.released).length > 0 && (
+      <Dashboard
+        address={address}
+        readContracts={readContracts}
+        writeContracts={writeContracts}
+        contractName={"GTCStaking"}
+        eventName={"VoteCasted"}
+        localProvider={localProvider}
+        mainnetProvider={mainnetProvider}
+        votes={votes}
+        tx={tx}
+      />
+      {/*votes && votes.filter(_item => !_item.released).length > 0 && (
         <div
           style={{
             padding: 16,
@@ -154,7 +154,7 @@ export default function Home({ tokenBalance, cart, setCart, votes, tx, readContr
             Unstake
           </Button>
         </div>
-      )}
+          )*/}
 
       <div style={{ maxWidth: "1280px", marginLeft: "auto", marginRight: "auto" }}>
         <div

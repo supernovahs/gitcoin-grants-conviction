@@ -74,10 +74,10 @@ module.exports = {
       */
     },
     rinkeby: {
-      url: "https://rinkeby.infura.io/v3/460f40a260564ac4a4f4b3fffb032dad", // <---- YOUR INFURA ID! (or it won't work)
+      url: "https://rinkeby.infura.io/v3/e23ef6f1da494103bf900b3734e228f7", // <---- YOUR INFURA ID! (or it won't work)
       //    url: "https://speedy-nodes-nyc.moralis.io/XXXXXXXXXXXXXXXXXXXXXXX/eth/rinkeby", // <---- YOUR MORALIS ID! (not limited to infura)
       accounts: [
-        "0xe8abc32bf3a1a54a50a9a2419b8f00f145a050f033fb1cf925240a2d60e7d758",
+        "0x7c04608e9ea425d9b7bed877a2b22b7e52861528e081f4e47ffaaaf0416fff7d",
       ],
     },
     kovan: {

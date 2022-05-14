@@ -3,23 +3,26 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
-    network: localhost
+    name: GTCStaking
+    network: rinkeby
     source:
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-      abi: YourContract
-      startBlock: 1
+      abi: GTCStaking
+      address: "0x18317de792D372Dc39c5e0c99C70b08bbf27162A"
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Purpose
-        - Sender
+        - Vote
+        - Release
+        - Voter
+        - RunningVoteRecord
       abis:
-        - name: YourContract
-          file: ./abis/localhost_YourContract.json
+        - name: GTCStaking
+          file: ./abis/rinkeby_GTCStaking.json
       eventHandlers:
-        - event: SetPurpose(address,string)
-          handler: handleSetPurpose
+        - event: VoteCasted(uint56,address,uint152,uint48)
+          handler: handleVoteCasted
+        - event: TokensReleased(uint56,address,uint152)
+          handler: handleTokensReleased
       file: ./src/mapping.ts

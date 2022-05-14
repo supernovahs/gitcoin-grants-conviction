@@ -27,10 +27,10 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   // Getting a previously deployed contract
   const GTC = await ethers.getContract("GTC", deployer);
 
-  console.log("Sending GTC...")
+  console.log("Sending GTC...");
 
   const tx1 = await GTC.transfer(
-    "0x523d007855B3543797E0d3D462CB44B601274819", // 0xdarni.eth
+    "0x523d007855B3543797E0d3D462CB44B601274819", // salatti.eth
     ethers.utils.parseEther("1000")
   );
   await tx1.wait();
@@ -39,7 +39,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     "0x3045313ad5d09035C69dA75E59a163c754D1b442", // second address
     ethers.utils.parseEther("10")
   );
-  await tx2.wait();
+  await tx2;
 
   const tx3 = await GTC.transfer(
     "0x34aA3F359A9D614239015126635CE7732c18fDF3", // atg.eth
@@ -53,9 +53,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   );
   await tx4.wait();
 
-
-
-  console.log("GTC address is",GTC.address)
+  console.log("GTC address is", GTC.address);
 
   await deploy("GTCStaking", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy

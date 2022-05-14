@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "GTC": {
-          "address": "0xE2330578f5a2d10F776F922F01C83372a5ff765b",
+          "address": "0x67775cBe9e73aa255Fc8e6A992Ed340e3b28D926",
           "abi": [
             {
               "inputs": [],
@@ -303,7 +303,7 @@
           ]
         },
         "GTCStaking": {
-          "address": "0x8d0347D63AE8474eDc16caEEE42c8ed37A38E1Dd",
+          "address": "0x18317de792D372Dc39c5e0c99C70b08bbf27162A",
           "abi": [
             {
               "inputs": [
@@ -327,13 +327,14 @@
               "type": "error"
             },
             {
-              "inputs": [],
-              "name": "TOKENS_ALREADY_RELAEASED",
-              "type": "error"
-            },
-            {
               "anonymous": false,
               "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "uint56",
+                  "name": "voteId",
+                  "type": "uint56"
+                },
                 {
                   "indexed": false,
                   "internalType": "address",

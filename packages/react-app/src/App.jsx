@@ -275,6 +275,7 @@ function App(props) {
       <Switch>
         <Route exact path="/">
           <Home
+            address={address}
             tokenBalance={tokenBalance}
             cart={cart}
             setCart={setCart}
@@ -282,6 +283,8 @@ function App(props) {
             tx={tx}
             writeContracts={writeContracts}
             readContracts={readContracts}
+            localProvider={localProvider}
+            mainnetProvider={mainnetProvider}
           />
         </Route>
         <Route exact path="/checkout">

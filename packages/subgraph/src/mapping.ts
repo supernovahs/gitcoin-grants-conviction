@@ -1,33 +1,118 @@
 import { BigInt, Address } from "@graphprotocol/graph-ts";
 import {
-  YourContract,
-  SetPurpose,
-} from "../generated/YourContract/YourContract";
-import { Purpose, Sender } from "../generated/schema";
+  GTCStaking,
+  VoteCasted,
+  TokensReleased,
+  ConstructorCall__Outputs,
+} from "../generated/GTCStaking/GTCStaking";
+import { Vote, Voter, Release, RunningVoteRecord } from "../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
 
-export function handleSetPurpose(event: SetPurpose): void {
-  let senderString = event.params.sender.toHexString();
+export function handleVoteCasted(event: VoteCasted): void {
+  let voterString = event.params.voter.toHexString();
 
-  let sender = Sender.load(senderString);
+  let voter = Voter.load(voterString);
 
-  if (sender === null) {
-    sender = new Sender(senderString);
-    sender.address = event.params.sender;
-    sender.createdAt = event.block.timestamp;
-    sender.purposeCount = BigInt.fromI32(1);
+  if (voter === null) {
+    voter = new Voter(voterString);
+    voter.address = event.params.voter;
+    voter.createdAt = event.block.timestamp;
+    voter.voteCount = BigInt.fromI32(1);
+    voter.totalStaked = event.params.amount;
   } else {
-    sender.purposeCount = sender.purposeCount.plus(BigInt.fromI32(1));
+    voter.voteCount = voter.voteCount.plus(BigInt.fromI32(1));
+    voter.totalStaked = voter.totalStaked.plus(event.params.amount);
   }
 
-  let purpose = new Purpose(
+  let vote = new Vote(event.params.voteId.toHexString());
+
+  vote.voteId = event.params.voteId;
+  vote.voter = voter.id;
+  vote.amount = event.params.amount;
+  vote.grantId = event.params.grantId;
+  vote.createdAt = event.block.timestamp;
+  vote.transactionHash = event.transaction.hash.toHex();
+
+  let runningVoteRecord = RunningVoteRecord.load(
+    voter.id + "-" + vote.grantId.toHexString()
+  );
+
+  if (runningVoteRecord === null) {
+    runningVoteRecord = new RunningVoteRecord(
+      voter.id + "-" + vote.grantId.toHexString()
+    );
+    runningVoteRecord.createdAt = event.block.timestamp;
+    runningVoteRecord.updatedAt = event.block.timestamp;
+    runningVoteRecord.initialTransactionHash = event.transaction.hash.toHex();
+    runningVoteRecord.latestTransactionHash = event.transaction.hash.toHex();
+    runningVoteRecord.voter = voter.id;
+    runningVoteRecord.votes = [vote.id];
+    runningVoteRecord.grantId = vote.grantId;
+    runningVoteRecord.voteCount = BigInt.fromI32(1);
+    runningVoteRecord.totalStaked = event.params.amount;
+  } else {
+    runningVoteRecord.updatedAt = event.block.timestamp;
+    runningVoteRecord.latestTransactionHash = event.transaction.hash.toHex();
+    runningVoteRecord.voteCount = runningVoteRecord.voteCount.plus(
+      BigInt.fromI32(1)
+    );
+    runningVoteRecord.totalStaked = runningVoteRecord.totalStaked.plus(
+      event.params.amount
+    );
+    runningVoteRecord.votes.push(vote.id);
+  }
+
+  voter.save();
+  vote.save();
+  runningVoteRecord.save();
+}
+
+export function handleTokensReleased(event: TokensReleased): void {
+  let voterString = event.params.voter.toHexString();
+
+  let voter = Voter.load(voterString);
+
+  if (voter === null) {
+    log.error("🚨 Voter not found: {}", [voterString]);
+    return;
+  }
+
+  let vote = Vote.load(event.params.voteId.toHexString());
+
+  if (vote === null) {
+    log.error("🚨 Vote not found: {}", [event.params.voteId.toHexString()]);
+    return;
+  }
+
+  let release = new Release(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
 
-  purpose.purpose = event.params.purpose;
-  purpose.sender = senderString;
-  purpose.createdAt = event.block.timestamp;
-  purpose.transactionHash = event.transaction.hash.toHex();
+  release.voteId = event.params.voteId;
+  release.voter = voter.id;
+  release.amount = event.params.amount;
+  release.createdAt = event.block.timestamp;
+  release.transactionHash = event.transaction.hash.toHex();
 
-  purpose.save();
-  sender.save();
+  let runningVoteRecord = RunningVoteRecord.load(
+    voter.id + "-" + vote.grantId.toHexString()
+  );
+
+  if (runningVoteRecord === null) {
+    log.error("🚨 RunningVoteRecord not found: {}-{}", [
+      voter.id,
+      vote.grantId.toHexString(),
+    ]);
+    return;
+  }
+
+  runningVoteRecord.updatedAt = event.block.timestamp;
+  runningVoteRecord.latestTransactionHash = event.transaction.hash.toHex();
+  runningVoteRecord.totalStaked = runningVoteRecord.totalStaked.minus(
+    event.params.amount
+  );
+
+  // voter.save();
+  release.save();
+  runningVoteRecord.save();
 }

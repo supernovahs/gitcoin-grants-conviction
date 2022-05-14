@@ -1,15 +1,41 @@
-type Purpose @entity {
+type Vote @entity {
   id: ID!
-  sender: Sender!
-  purpose: String!
+  voteId: BigInt!
+  voter: Voter!
+  amount: BigInt!
+  grantId: BigInt!
   createdAt: BigInt!
   transactionHash: String!
 }
 
-type Sender @entity {
+type Release @entity {
+  id: ID!
+  voteId: BigInt!
+  voter: Voter!
+  amount: BigInt!
+  createdAt: BigInt!
+  transactionHash: String!
+}
+
+type Voter @entity {
   id: ID!
   address: Bytes!
-  purposes: [Purpose!] @derivedFrom(field: "sender")
   createdAt: BigInt!
-  purposeCount: BigInt!
+  voteCount: BigInt!
+  totalStaked: BigInt!
+  votes: [Vote!]! @derivedFrom(field: "voter")
+  tokenReleases: [Release!]! @derivedFrom(field: "voter")
+}
+
+type RunningVoteRecord @entity {
+  id: ID!
+  voter: Voter!
+  votes: [Vote!]!
+  grantId: BigInt!
+  voteCount: BigInt!
+  totalStaked: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  initialTransactionHash: String!
+  latestTransactionHash: String!
 }

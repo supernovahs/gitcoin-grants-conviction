@@ -10,7 +10,7 @@ export default function VoteItem({ item, onCheckCallback }) {
   const [grantDetails, setGrantDetails] = useState({});
 
   function onChange(e) {
-    onCheckCallback(item.voteId, e.target.checked);
+    onCheckCallback(item, e.target.checked);
   }
 
   const axiosConfig = {
@@ -20,28 +20,35 @@ export default function VoteItem({ item, onCheckCallback }) {
 
   const axiosClient = axios.create(axiosConfig);
 
-  useEffect(
-    () => async () => {
-      try {
-        let res = await axiosClient.get(`/${item.grantId}`);
-        setGrantDetails(res.data[0]);
-        setLoading(false);
-      } catch (error) {
-        console.log("🗳 Error:", error);
-      }
-    },
-    [item],
-  );
+  const fetchGrantDetails = async item => {
+    try {
+      let res = await axiosClient.get(`/${item.grantId}`);
+      setGrantDetails(res.data[0]);
+      setLoading(false);
+    } catch (error) {
+      console.log("🗳 Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    void fetchGrantDetails(item);
+  }, [item]);
 
   return (
     <List.Item>
       <Skeleton loading={loading} title={false} active>
-        <List.Item.Meta avatar={<Avatar src={grantDetails.img} />} title={grantDetails.title} />
-        <div style={{ float: "right", marginLeft: "16px" }}>Amount: {ethers.utils.formatEther(item.amount)} GTC</div>
+        {item && (
+          <>
+            <List.Item.Meta avatar={<Avatar src={grantDetails.img} />} title={grantDetails.title} />
+            <div style={{ float: "right", marginLeft: "16px" }}>
+              Amount: {ethers.utils.formatEther(item.totalStaked)} GTC
+            </div>
 
-        <Checkbox onChange={onChange} style={{ marginLeft: "16px" }}>
-          Unstake
-        </Checkbox>
+            <Checkbox onChange={onChange} style={{ marginLeft: "16px" }}>
+              Unstake
+            </Checkbox>
+          </>
+        )}
       </Skeleton>
     </List.Item>
   );

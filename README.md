@@ -1,5 +1,133 @@
 # 🏗 Scaffold-ETH
 
+```bash
+% yarn deploy --network rinkeby
+yarn run v1.22.15
+$ yarn workspace @scaffold-eth/hardhat deploy --network rinkeby
+$ hardhat deploy --export-all ../react-app/src/contracts/hardhat_contracts.json --network rinkeby
+Compiling 6 files with 0.8.4
+Compilation finished successfully
+reusing "GTC" at 0x67775cBe9e73aa255Fc8e6A992Ed340e3b28D926
+Sending GTC...
+GTC address is 0x67775cBe9e73aa255Fc8e6A992Ed340e3b28D926
+deploying "GTCStaking" (tx: 0x39bee34bc21540a102995bf1d329a86112e462d6690486c07e931de780700956)...: deployed at 0x18317de792D372Dc39c5e0c99C70b08bbf27162A with 893568 gas
+$ hardhat run scripts/publish.js
+✅  Published contracts to the subgraph package.
+✨  Done in 72.75s.
+```
+
+Local subgraph endpoint:
+http://localhost:8000/subgraphs/name/gtc-conviction-subgraph-eth
+
+## Subgraph raw notes
+
+Step 1: Clean up previous data:
+yarn clean-graph-node
+Step 2: Spin up a local graph node by running
+yarn run-graph-node
+Step 3: Create your local subgraph by running
+yarn graph-create-local
+This is only required once!
+Step 4: Deploy your local subgraph by running
+yarn graph-ship-local
+Step 5: Edit your local subgraph in packages/subgraph/src
+Learn more about subgraph definition here
+Step 6: Deploy your contracts and your subgraph in one go by running:
+yarn deploy-and-graph
+
+### Sample GraphQL Queries
+
+```graphql
+query getVoterById {
+  voter(id: "0x523d007855b3543797e0d3d462cb44b601274819") {
+    id
+  }
+}
+
+query getRunningRecordsByVoterId {
+  runningVoteRecords(
+    where: { voter: "0x523d007855b3543797e0d3d462cb44b601274819" }
+  ) {
+    id
+    voter {
+      id
+    }
+    votes {
+      id
+      voteId
+    }
+    grantId
+    voteCount
+    totalStaked
+    createdAt
+    updatedAt
+  }
+}
+
+query getVotesByVoterId {
+  votes(where: { voter: "0x523d007855b3543797e0d3d462cb44b601274819" }) {
+    id
+    voteId
+    voter {
+      id
+    }
+    amount
+    grantId
+    createdAt
+  }
+}
+
+query getVotesByGrantId {
+  votes(where: { grantId: 2062 }) {
+    id
+    voteId
+    voter {
+      id
+    }
+    amount
+    grantId
+    createdAt
+  }
+}
+
+query getRunningRecordsByGrantId {
+  runningVoteRecords(where: { grantId: 2062 }) {
+    id
+    voter {
+      id
+    }
+    grantId
+    voteCount
+    totalStaked
+    createdAt
+    updatedAt
+  }
+}
+
+query getReleasesByVoterId {
+  releases(where: { voter: "0x523d007855b3543797e0d3d462cb44b601274819" }) {
+    id
+    voter {
+      id
+    }
+    voteId
+    amount
+    createdAt
+  }
+}
+
+query getReleases {
+  releases {
+    id
+    voter {
+      id
+    }
+    voteId
+    amount
+    createdAt
+  }
+}
+```
 
 > everything you need to build on Ethereum! 🚀
 
@@ -51,15 +179,14 @@ yarn deploy
 
 Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
 
-
 # 🍦 Other Flavors
+
 - [scaffold-eth-typescript](https://github.com/scaffold-eth/scaffold-eth-typescript)
 - [scaffold-nextjs](https://github.com/scaffold-eth/scaffold-eth/tree/scaffold-nextjs)
 - [scaffold-chakra](https://github.com/scaffold-eth/scaffold-eth/tree/chakra-ui)
 - [eth-hooks](https://github.com/scaffold-eth/eth-hooks)
 - [eth-components](https://github.com/scaffold-eth/eth-components)
 - [scaffold-eth-expo](https://github.com/scaffold-eth/scaffold-eth-expo)
-
 
 # 🔭 Learning Solidity
 
