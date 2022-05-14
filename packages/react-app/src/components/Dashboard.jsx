@@ -36,6 +36,13 @@ export default function Events({ address, readContracts, writeContracts, tx }) {
   const gGGQL = gql(query);
   const { loading, data } = useQuery(gGGQL, { pollInterval: 2500 });
 
+  useEffect(() => {
+    console.log("Subgraph loading:", loading);
+    if (data) {
+      console.log("Subgraph received:", data);
+    }
+  }, [data, loading]);
+
   const [unstakeCart, setUnstakeCart] = useState([]);
 
   const handleUnstake = () => {

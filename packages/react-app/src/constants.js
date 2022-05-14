@@ -15,6 +15,8 @@ export const CONVICTION_MULTIPLIER = 0.001;
 
 export const GTC_STAKING_DEPLOYMENT_BLOCK = "10654544";
 
+export const GRAPH_URI = "https://api.thegraph.com/subgraphs/name/danielesalatti/gtc-conviction-voting-rinkeby";
+
 export const NETWORKS = {
   localhost: {
     name: "localhost",
