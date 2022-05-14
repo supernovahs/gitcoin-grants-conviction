@@ -59,7 +59,10 @@ export function handleVoteCasted(event: VoteCasted): void {
     runningVoteRecord.totalStaked = runningVoteRecord.totalStaked.plus(
       event.params.amount
     );
-    runningVoteRecord.votes.push(vote.id);
+    // This does not work: runningVoteRecord.votes.push(vote.id);
+    let votes = runningVoteRecord.votes;
+    votes.push(vote.id);
+    runningVoteRecord.votes = votes;
   }
 
   voter.save();
