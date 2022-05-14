@@ -13,7 +13,7 @@ const themes = {
 
 const prevTheme = window.localStorage.getItem("theme");
 
-const subgraphUri = "http://localhost:8000/subgraphs/name/gtc-conviction-subgraph-eth";
+const subgraphUri = process.env.SUBGRAPH_URI;
 
 const client = new ApolloClient({
   uri: subgraphUri,

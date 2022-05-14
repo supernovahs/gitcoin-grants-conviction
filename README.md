@@ -19,6 +19,9 @@ $ hardhat run scripts/publish.js
 Local subgraph endpoint:
 http://localhost:8000/subgraphs/name/gtc-conviction-subgraph-eth
 
+On the graph:
+https://api.thegraph.com/subgraphs/name/danielesalatti/gtc-conviction-voting-rinkeby
+
 ## Subgraph raw notes
 
 Step 1: Clean up previous data:

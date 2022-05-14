@@ -4,11 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ gtc-conviction-subgraph-eth",
-    "create-local": "graph create --node http://localhost:8020/ gtc-conviction-subgraph-eth",
-    "remove-local": "graph remove --node http://localhost:8020/ gtc-conviction-subgraph-eth",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gtc-conviction-subgraph-eth"
+    "build": "graph build"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.29.1",
