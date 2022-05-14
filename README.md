@@ -24,19 +24,12 @@ https://api.thegraph.com/subgraphs/name/danielesalatti/gtc-conviction-voting-rin
 
 ## Subgraph raw notes
 
-Step 1: Clean up previous data:
-yarn clean-graph-node
-Step 2: Spin up a local graph node by running
-yarn run-graph-node
-Step 3: Create your local subgraph by running
-yarn graph-create-local
-This is only required once!
-Step 4: Deploy your local subgraph by running
-yarn graph-ship-local
-Step 5: Edit your local subgraph in packages/subgraph/src
-Learn more about subgraph definition here
-Step 6: Deploy your contracts and your subgraph in one go by running:
-yarn deploy-and-graph
+1. Clean up previous data: `yarn clean-graph-node`
+2. Spin up a local graph node by running: `yarn run-graph-node`
+3. Create your local subgraph by running: `yarn graph-create-local` <= this is only required once
+4. Deploy your local subgraph by running: `yarn graph-ship-local`
+5. Edit your local subgraph in packages/subgraph/src
+6. Deploy your contracts and your subgraph in one go by running: `yarn deploy-and-graph`
 
 ### Sample GraphQL Queries
 
