@@ -73,7 +73,6 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
       }}
     >
       <p>By clicking OK you agree to stake your GTC tokens according to your selections:</p>
-      <p>Remember: you will not be able to unstake your tokens until the set time!</p>
       <List
         itemLayout="horizontal"
         dataSource={cart}
