@@ -5,13 +5,27 @@ import {
   TokensReleased,
   ConstructorCall__Outputs,
 } from "../generated/GTCStaking/GTCStaking";
-import { Vote, Voter, Release, RunningVoteRecord } from "../generated/schema";
+import {
+  Vote,
+  Voter,
+  Release,
+  RunningVoteRecord,
+  Grant,
+} from "../generated/schema";
 import { log } from "@graphprotocol/graph-ts";
 
 export function handleVoteCasted(event: VoteCasted): void {
   let voterString = event.params.voter.toHexString();
 
   let voter = Voter.load(voterString);
+
+  let grant = Grant.load(event.params.grantId.toHexString());
+
+  if (grant == null) {
+    grant = new Grant(event.params.grantId.toHexString());
+    grant.votes = [];
+    grant.releases = [];
+  }
 
   if (voter === null) {
     voter = new Voter(voterString);
@@ -32,6 +46,10 @@ export function handleVoteCasted(event: VoteCasted): void {
   vote.grantId = event.params.grantId;
   vote.createdAt = event.block.timestamp;
   vote.transactionHash = event.transaction.hash.toHex();
+
+  let votesForGrant = grant.votes;
+  votesForGrant.push(vote.id);
+  grant.votes = votesForGrant;
 
   let runningVoteRecord = RunningVoteRecord.load(
     voter.id + "-" + vote.grantId.toHexString()
@@ -68,6 +86,7 @@ export function handleVoteCasted(event: VoteCasted): void {
   voter.save();
   vote.save();
   runningVoteRecord.save();
+  grant.save();
 }
 
 export function handleTokensReleased(event: TokensReleased): void {
@@ -87,6 +106,13 @@ export function handleTokensReleased(event: TokensReleased): void {
     return;
   }
 
+  let grant = Grant.load(vote.grantId.toHexString());
+
+  if (grant == null) {
+    log.error("🚨 Grant not found: {}", [vote.grantId.toHexString()]);
+    return;
+  }
+
   let release = new Release(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
@@ -96,6 +122,10 @@ export function handleTokensReleased(event: TokensReleased): void {
   release.amount = event.params.amount;
   release.createdAt = event.block.timestamp;
   release.transactionHash = event.transaction.hash.toHex();
+
+  let releasesForGrant = grant.releases;
+  releasesForGrant.push(release.id);
+  grant.releases = releasesForGrant;
 
   let runningVoteRecord = RunningVoteRecord.load(
     voter.id + "-" + vote.grantId.toHexString()
@@ -118,4 +148,5 @@ export function handleTokensReleased(event: TokensReleased): void {
   // voter.save();
   release.save();
   runningVoteRecord.save();
+  grant.save();
 }

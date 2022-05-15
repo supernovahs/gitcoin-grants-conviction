@@ -39,3 +39,9 @@ type RunningVoteRecord @entity {
   initialTransactionHash: String!
   latestTransactionHash: String!
 }
+
+type Grant @entity {
+  id: ID!
+  votes: [Vote!]!
+  releases: [Release!]!
+}
