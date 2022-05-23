@@ -26,3 +26,28 @@ dataSources:
         - event: TokensReleased(uint56,address,uint152)
           handler: handleTokensReleased
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: GTCStaking
+    network: mainnet
+    source:
+      abi: GTCStaking
+      address: "0x9C2A7aC762ea6E33cfc380A5C802919b496c9e44"
+      startBlock: 14826457
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Vote
+        - Release
+        - Voter
+        - RunningVoteRecord
+      abis:
+        - name: GTCStaking
+          file: ./abis/mainnet_GTCStaking.json
+      eventHandlers:
+        - event: VoteCasted(uint56,address,uint152,uint48)
+          handler: handleVoteCasted
+        - event: TokensReleased(uint56,address,uint152)
+          handler: handleTokensReleased
+      file: ./src/mapping.ts
