@@ -102,6 +102,7 @@ export default function Events({ address, readContracts, writeContracts, tx }) {
             }}
             type="primary"
             shape="round"
+            disabled={unstakeCart.length == 0}
             icon={<UnlockOutlined key="unstake" />}
           >
             Unstake

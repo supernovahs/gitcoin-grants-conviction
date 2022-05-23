@@ -127,35 +127,6 @@ export default function Home({
         votes={votes}
         tx={tx}
       />
-      {/*votes && votes.filter(_item => !_item.released).length > 0 && (
-        <div
-          style={{
-            padding: 16,
-            paddingBottom: 0,
-            width: "50%",
-            margin: "auto",
-            marginTop: 16,
-            marginBottom: 0,
-          }}
-        >
-          <List
-            itemLayout="horizontal"
-            dataSource={votes.filter(_item => !_item.released)}
-            renderItem={item => <VoteItem item={item} onCheckCallback={unstakeCheckCallBack} />}
-          />
-          <Button
-            onClick={() => {
-              handleUnstake();
-            }}
-            type="primary"
-            shape="round"
-            icon={<UnlockOutlined key="unstake" />}
-          >
-            Unstake
-          </Button>
-        </div>
-          )*/}
-
       <div style={{ maxWidth: "1280px", marginLeft: "auto", marginRight: "auto" }}>
         <div
           style={{
