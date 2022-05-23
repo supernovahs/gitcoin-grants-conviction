@@ -16,6 +16,8 @@ $ hardhat run scripts/publish.js
 ✨  Done in 38.43s.
 ```
 
+Verified at: [https://etherscan.io/address/0x9C2A7aC762ea6E33cfc380A5C802919b496c9e44#code](https://etherscan.io/address/0x9C2A7aC762ea6E33cfc380A5C802919b496c9e44#code)
+
 ## Rinkeby
 
 ```bash
