@@ -22,6 +22,8 @@ Mainnet subgraph: https://thegraph.com/studio/subgraph/gtc-conviction-voting-mai
 
 Temporary query URL: https://api.studio.thegraph.com/query/20308/gtc-conviction-voting-mainnet/v0.0.1
 
+The permanent query URL is: https://gateway.thegraph.com/api/[api-key]/subgraphs/id/27N5qfvJ7eRS3aD2yWs9ey8FEffd3Ssow8aUM3Q3wdbF
+
 ## Rinkeby
 
 ```bash
