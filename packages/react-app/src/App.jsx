@@ -417,21 +417,25 @@ function App(props) {
       </div>
 
       <div style={{ position: "fixed", textAlign: "right", right: 0, bottom: 50, padding: 10 }}>
-        {web3Modal.cachedProvider && location && location.pathname != "/checkout" && location.pathname != "/confirm" && (
-          <Button
-            style={{ marginRight: 70, transform: "scale(2)" }}
-            type="primary"
-            key="cart"
-            shape="round"
-            size="large"
-            icon={<ShoppingCartOutlined key="add-to-cart" />}
-            onClick={() => {
-              history.push("/checkout");
-            }}
-          >
-            Cart {cart.length > 0 && `(${cart.length})`}
-          </Button>
-        )}
+        {web3Modal.cachedProvider &&
+          location &&
+          location.pathname != "/checkout" &&
+          location.pathname != "/confirm" &&
+          cart.length > 0 && (
+            <Button
+              style={{ marginRight: 70, transform: "scale(2)" }}
+              type="primary"
+              key="cart"
+              shape="round"
+              size="large"
+              icon={<ShoppingCartOutlined key="add-to-cart" />}
+              onClick={() => {
+                history.push("/checkout");
+              }}
+            >
+              Cart {cart.length > 0 && `(${cart.length})`}
+            </Button>
+          )}
       </div>
       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 50, padding: 10 }}>
         {web3Modal.cachedProvider && location && location.pathname == "/checkout" && (
