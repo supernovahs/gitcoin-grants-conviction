@@ -1,5 +1,23 @@
 # 🏗 Scaffold-ETH
 
+## Mainnet
+
+```bash
+% yarn deploy --network mainnet
+yarn run v1.22.15
+$ yarn workspace @scaffold-eth/hardhat deploy --network mainnet
+$ hardhat deploy --export-all ../react-app/src/contracts/hardhat_contracts.json --network mainnet
+Compiling 6 files with 0.8.4
+Compilation finished successfully
+chainId: 1
+deploying "GTCStaking" (tx: 0xa2859bb0ba9953b6c9c3481b2277d3280d620eb1d8bb9cd10471f8890d07c8a0)...: deployed at 0x9C2A7aC762ea6E33cfc380A5C802919b496c9e44 with 909296 gas
+$ hardhat run scripts/publish.js
+✅  Published contracts to the subgraph package.
+✨  Done in 38.43s.
+```
+
+## Rinkeby
+
 ```bash
 % yarn deploy --network rinkeby
 yarn run v1.22.15

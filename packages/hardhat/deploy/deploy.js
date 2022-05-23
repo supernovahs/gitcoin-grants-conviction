@@ -17,48 +17,56 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  const tokenDeployment = await deploy("GTC", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-    from: deployer,
-    /*args: [ "0x18fFE4dADcCe63A074Ef9cfe327cAb9AD4Ad9f76" ],*/
-    log: true,
-  });
+  let gtcAddress = "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f";
 
-  // Getting a previously deployed contract
-  const GTC = await ethers.getContract("GTC", deployer);
+  console.log("chainId:", chainId);
 
-  console.log("Sending GTC...");
+  if (chainId !== "1") {
+    console.log("Not on mainnet");
+    const tokenDeployment = await deploy("GTC", {
+      // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+      from: deployer,
+      /*args: [ "0x18fFE4dADcCe63A074Ef9cfe327cAb9AD4Ad9f76" ],*/
+      log: true,
+    });
 
-  const tx1 = await GTC.transfer(
-    "0x523d007855B3543797E0d3D462CB44B601274819", // salatti.eth
-    ethers.utils.parseEther("1000")
-  );
-  await tx1.wait();
+    // Getting a previously deployed contract
+    const GTC = await ethers.getContract("GTC", deployer);
 
-  const tx2 = await GTC.transfer(
-    "0x3045313ad5d09035C69dA75E59a163c754D1b442", // second address
-    ethers.utils.parseEther("10")
-  );
-  await tx2;
+    console.log("Sending GTC...");
 
-  const tx3 = await GTC.transfer(
-    "0x34aA3F359A9D614239015126635CE7732c18fDF3", // atg.eth
-    ethers.utils.parseEther("1000")
-  );
-  await tx3.wait();
+    const tx1 = await GTC.transfer(
+      "0x523d007855B3543797E0d3D462CB44B601274819", // salatti.eth
+      ethers.utils.parseEther("1000")
+    );
+    await tx1.wait();
 
-  const tx4 = await GTC.transfer(
-    "0x00de4b13153673bcae2616b67bf822500d325fc3", // owocki.eth
-    ethers.utils.parseEther("1000")
-  );
-  await tx4.wait();
+    const tx2 = await GTC.transfer(
+      "0x3045313ad5d09035C69dA75E59a163c754D1b442", // second address
+      ethers.utils.parseEther("10")
+    );
+    await tx2;
 
-  console.log("GTC address is", GTC.address);
+    const tx3 = await GTC.transfer(
+      "0x34aA3F359A9D614239015126635CE7732c18fDF3", // atg.eth
+      ethers.utils.parseEther("1000")
+    );
+    await tx3.wait();
+
+    const tx4 = await GTC.transfer(
+      "0x00de4b13153673bcae2616b67bf822500d325fc3", // owocki.eth
+      ethers.utils.parseEther("1000")
+    );
+    await tx4.wait();
+
+    console.log("GTC address is", GTC.address);
+    gtcAddress = GTC.address;
+  }
 
   await deploy("GTCStaking", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [GTC.address],
+    args: [gtcAddress],
     log: true,
   });
 
