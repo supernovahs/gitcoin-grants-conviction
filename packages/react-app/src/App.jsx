@@ -58,7 +58,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.rinkeby; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.mainnet; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -175,7 +175,7 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
-  const tokenBalance = useContractReader(readContracts, "GTC", "balanceOf", [address]);
+  const tokenBalance = useContractReader(mainnetContracts, "GTC", "balanceOf", [address]);
 
   const currentTimestamp = useContractReader(readContracts, "GTCStaking", "currentTimestamp");
 

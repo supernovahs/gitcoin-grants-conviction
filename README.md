@@ -18,6 +18,10 @@ $ hardhat run scripts/publish.js
 
 Verified at: [https://etherscan.io/address/0x9C2A7aC762ea6E33cfc380A5C802919b496c9e44#code](https://etherscan.io/address/0x9C2A7aC762ea6E33cfc380A5C802919b496c9e44#code)
 
+Mainnet subgraph: https://thegraph.com/studio/subgraph/gtc-conviction-voting-mainnet/
+
+Temporary query URL: https://api.studio.thegraph.com/query/20308/gtc-conviction-voting-mainnet/v0.0.1
+
 ## Rinkeby
 
 ```bash
