@@ -175,7 +175,8 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
-  const tokenBalance = useContractReader(mainnetContracts, "GTC", "balanceOf", [address]);
+  //const tokenBalance = useContractReader(mainnetContracts, "GTC", "balanceOf", [address]);
+  const tokenBalance = useContractReader(readContracts, "GTC", "balanceOf", [address]);
 
   const currentTimestamp = useContractReader(readContracts, "GTCStaking", "currentTimestamp");
 
@@ -297,6 +298,7 @@ function App(props) {
             readContracts={readContracts}
             cart={cart}
             setCart={setCart}
+            address={address}
           />
         </Route>
         <Route exact path="/debug">
