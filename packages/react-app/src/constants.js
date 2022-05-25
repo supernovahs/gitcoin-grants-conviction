@@ -7,7 +7,8 @@ export const ETHERSCAN_KEY = "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 // BLOCKNATIVE ID FOR Notify.js:
 export const BLOCKNATIVE_DAPPID = "0b58206a-f3c0-4701-a62f-73c7243e8c77";
 
-export const ALCHEMY_KEY = "d71_tP71CRx9mo5a2K0ET9Ez_uoGoNBT";
+export const ALCHEMY_RINKEBY_KEY = "d71_tP71CRx9mo5a2K0ET9Ez_uoGoNBT";
+export const ALCHEMY_MAINNET_KEY = "YJ8ZAF6hKi5zqcLtOtYBTG9SVvURLE0Q";
 
 export const BUIDL_GUIDL_API_ENDPOINT = "https://bgapi.v37.io";
 
@@ -31,7 +32,7 @@ export const NETWORKS = {
     name: "mainnet",
     color: "#ff8b9e",
     chainId: 1,
-    rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    rpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_MAINNET_KEY}`,
     blockExplorer: "https://etherscan.io/",
   },
   kovan: {
@@ -46,7 +47,7 @@ export const NETWORKS = {
     name: "rinkeby",
     color: "#e0d068",
     chainId: 4,
-    rpcUrl: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_KEY}`,
+    rpcUrl: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_RINKEBY_KEY}`,
     faucet: "https://faucet.rinkeby.io/",
     blockExplorer: "https://rinkeby.etherscan.io/",
   },

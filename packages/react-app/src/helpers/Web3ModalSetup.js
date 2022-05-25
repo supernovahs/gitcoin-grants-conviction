@@ -4,7 +4,7 @@ import Authereum from "authereum";
 import Fortmatic from "fortmatic";
 import WalletLink from "walletlink";
 import Web3Modal from "web3modal";
-import { ALCHEMY_KEY, INFURA_ID } from "../constants";
+import { ALCHEMY_MAINNET_KEY, INFURA_ID } from "../constants";
 
 // Coinbase walletLink init
 const walletLink = new WalletLink({
@@ -12,7 +12,10 @@ const walletLink = new WalletLink({
 });
 
 // WalletLink provider
-const walletLinkProvider = walletLink.makeWeb3Provider(`https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`, 1);
+const walletLinkProvider = walletLink.makeWeb3Provider(
+  `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_MAINNET_KEY}`,
+  1,
+);
 
 // Portis ID: 6255fb2b-58c8-433b-a2c9-62098c05ddc9
 /**
