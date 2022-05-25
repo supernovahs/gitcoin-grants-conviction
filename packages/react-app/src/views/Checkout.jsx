@@ -60,7 +60,9 @@ export default function Checkout({ tokenBalance, cart, setCart }) {
                     value={item.amount ?? 0}
                     onChange={e => {
                       item.amount = Number.isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value);
+                      cart[cart.indexOf(item)] = item;
                       e.target.value = item.amount;
+                      setCart(cart);
                       setCartTotal(
                         cart.reduce((runnintTotal, _item) => {
                           const value = _item.amount ? parseFloat(_item.amount) : 0;
