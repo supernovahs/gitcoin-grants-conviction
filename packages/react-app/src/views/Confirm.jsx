@@ -20,16 +20,11 @@ export default function Confirm({ tx, readContracts, writeContracts, cart, setCa
   );
 
   useEffect(() => {
-    console.log("DASA Confirm: useEffect");
     if (!readContracts.GTC || !readContracts.GTCStaking) return;
-    console.log("DASA Confirm: into useEffect");
     const checkCanStake = async () => {
       const balance = await readContracts.GTC.balanceOf(address);
       const currentAllowance = await readContracts.GTC.allowance(address, readContracts.GTCStaking.address);
-      console.log("DASA Confirm: allowance", currentAllowance);
-      console.log("DASA Confirm: balance", balance);
       const canStake = balance.gte(cartTotal) && currentAllowance.gte(cartTotal);
-      console.log("DASA Confirm: canStake", canStake);
       setAllowance(currentAllowance);
       setCanStake(canStake);
     };

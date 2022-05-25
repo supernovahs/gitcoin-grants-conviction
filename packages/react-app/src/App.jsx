@@ -61,7 +61,7 @@ const { ethers } = require("ethers");
 const initialNetwork = NETWORKS.mainnet; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
-const DEBUG = true;
+const DEBUG = false;
 const NETWORKCHECK = true;
 const USE_BURNER_WALLET = false; // toggle burner wallet feature
 const USE_NETWORK_SELECTOR = false;
@@ -175,17 +175,11 @@ function App(props) {
     "0x34aA3F359A9D614239015126635CE7732c18fDF3",
   ]);
 
-  //const tokenBalance = useContractReader(mainnetContracts, "GTC", "balanceOf", [address]);
   const tokenBalance = useContractReader(readContracts, "GTC", "balanceOf", [address]);
 
   const currentTimestamp = useContractReader(readContracts, "GTCStaking", "currentTimestamp");
 
   const votes = useContractReader(readContracts, "GTCStaking", "getVotesForAddress", [address]);
-
-  /*
-  const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
-  console.log("🏷 Resolved austingriffith.eth as:",addressFromENS)
-  */
 
   //
   // 🧫 DEBUG 👨🏻‍🔬
