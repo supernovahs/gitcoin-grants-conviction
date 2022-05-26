@@ -1,3 +1,3 @@
 testing:testCurrentTimestamp() (gas: 13943)
-testing:testReleaseTokens() (gas: 248157)
-testing:testVote() (gas: 282693)
+testing:testReleaseTokens() (gas: 246620)
+testing:testVote() (gas: 282287)
