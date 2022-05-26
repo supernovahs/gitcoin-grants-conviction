@@ -124,8 +124,12 @@ contract GTCStaking {
     @param _batch array of struct to stake into multiple grants.
     */
     function vote(BatchVoteParam[] calldata _batch) external {
-        for (uint256 i = 0; i < _batch.length; i++) {
+        for (uint256 i = 0; i < _batch.length; ) {
             _vote(_batch[i].grantId, _batch[i].amount);
+            /** @dev Saves 200 gas for 3 iterations ie 66 per iteration */
+            unchecked{
+                ++i;
+            }
         }
     }
 
@@ -134,7 +138,7 @@ contract GTCStaking {
     @param _voteIds array of vote ids in order to release tokens.
     */
     function releaseTokens(uint256[] calldata _voteIds) external {
-        for (uint256 i = 0; i < _voteIds.length; i++) {
+        for (uint256 i = 0; i < _voteIds.length; ++i) {
             if (votes[_voteIds[i]].voter != msg.sender) {
                 revert NOT_OWNER();
             }
@@ -146,6 +150,11 @@ contract GTCStaking {
             gtcToken.transfer(msg.sender, votes[_voteIds[i]].amount);
 
             emit TokensReleased(uint56(_voteIds[i]), msg.sender, votes[_voteIds[i]].amount);
+
+            /** @dev Adding unchecked here throws error  */
+            // unchecked{
+            //     ++i;
+            // }
         }
     }
 }
