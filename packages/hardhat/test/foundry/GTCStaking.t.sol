@@ -19,7 +19,7 @@ contract testing is Test {
     GTCStaking gtcStaking;
     GTC gtcToken;
 
-    /// @notice setUp function in Foundry is like a beforeEach function used in Hardhat!
+    /// @notice setUp function  in Foundry is like a beforeEach function used in Hardhat!
     /// @dev This function is called before each test.
     function setUp() public {
         evm.warp(50);
@@ -115,5 +115,9 @@ contract testing is Test {
         
         // calling releaseTokens again does not revert
         gtcStaking.releaseTokens(voteIds);
+    }
+
+    function testvotesbyaddress() public {
+        gtcStaking.getVotesForAddress(address(1));
     }
 }
